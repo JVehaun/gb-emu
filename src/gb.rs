@@ -1,7 +1,7 @@
 use std::fs::File;
 use std::io::prelude::*;
 
-pub struct VM {
+pub struct GB {
     wram: [u8; 8192],
     vram: [u8; 8192],
     cpu: CPU,
@@ -9,6 +9,20 @@ pub struct VM {
     regs: [u8; 0x80],
     oam: [u8; 0xA0],
     ei: u8,
+}
+
+impl GB {
+    pub fn new() -> GB {
+        return GB {
+            wram: [0; 8192],
+            vram: [0; 8192],
+            cpu: CPU::new(),
+            cart: Cartridge::new(),
+            regs: [0; 0x80],
+            oam: [0; 0xA0],
+            ei: 0,
+        }
+    }
 }
 
 pub struct CPU {
@@ -24,28 +38,60 @@ pub struct CPU {
 impl CPU {
     pub fn new() -> CPU {
         let mut cpu = CPU {
-            af: 0x01B0,
-            bc: 0x0013,
-            de: 0x00D8,
-            hl: 0x014D,
-            sp: 0xFFFE,
-            pc: 0x0100,
-        }
+            af: 0,
+            bc: 0,
+            de: 0,
+            hl: 0,
+            sp: 0,
+            pc: 0,
+        };
+        return cpu;
     }
-    return cpu;
 }
 
 pub struct Cartridge {
-    rom: [u8; 8192],
-    ram: [u8; 8192],
+    rom: [u8; 0x8000],
+    ram: [u8; 0x2000],
 }
 
-impl VM {
+impl Cartridge {
+    pub fn new() -> Cartridge {
+        let mut cartridge = Cartridge {
+            rom: [0; 0x8000],
+            ram: [0; 0x2000],
+        };
+        return cartridge;
+    }
+}
 
+impl Cartridge {
+    pub fn load_application(&mut self, filename: &str) -> bool {
+        let mut file = File::open(filename).expect("File error");
+        let fsize = file.metadata().unwrap().len();
+        println!("{:X}", fsize);
+
+        let mut buffer = vec![];
+        file.read_to_end(&mut buffer).expect("couldn't read file");
+        drop(file);
+
+        if (0x8000) >= fsize {
+            for i in 0..fsize
+            {
+                self.rom[i as usize] = buffer[i as usize];
+            }
+        }
+        else {
+            panic!("ROM too big for memory");
+        }
+        return true;
+    }
+}
+
+impl GB {
     fn mem_read(&mut self, addr: u16) -> u8 {
         if addr <= 0x3FFF {        // ROM Bank
             return self.cart.rom[addr as usize];
-        } else if addr >= 0x4000 addr <= 0x7FFF { // ROM Bank 1-n
+        } else if addr >= 0x4000 && addr <= 0x7FFF { // ROM Bank 1-n
             return self.cart.rom[addr as usize];
         } else if addr >= 0x8000 && addr <= 0x9FFF { // VRAM
             return self.vram[(addr - 0x8000) as usize];
@@ -61,35 +107,29 @@ impl VM {
             return self.regs[(addr - 0xFF00) as usize];
         } else if addr >= 0xFF80 && addr <= 0xFFFE { // High RAM
             return self.wram[(addr - 0xFF80) as usize];
-        } else if addr >= 0xFFFF && addr == 0xFFFF { // Interrupt Enable
+        } else if addr == 0xFFFF { // Interrupt Enable
             return self.ei;
         }
-
+        return 0;
     }
 
-    fn mem_read(&mut self, addr: u16) -> u8 {
-        if addr <= 0x3FFF {        // ROM Bank
-            return self.cart.rom[addr as usize];
-        } else if addr >= 0x4000 addr <= 0x7FFF { // ROM Bank 1-n
-            return self.cart.rom[addr as usize];
-        } else if addr >= 0x8000 && addr <= 0x9FFF { // VRAM
-            return self.vram[(addr - 0x8000) as usize];
-        } else if addr >= 0xA000 && addr <= 0xBFFF { // Cart RAM
-            return self.cart.ram[(addr - 0xA000) as usize];
-        } else if addr >= 0xC000 && addr <= 0xDFFF { // Low RAM
-            return self.wram[(addr - 0xC000) as usize];
-        } else if addr >= 0xE000 && addr <= 0xFDFF { // Low RAM Duplicate
-            return self.wram[(addr - 0xE000) as usize];
-        } else if addr >= 0xFE00 && addr <= 0xFE9F { // OAM RAM
-            return self.oam[(addr - 0xFE00) as usize];
-        } else if addr >= 0xFF00 && addr <= 0xFF7F { // I/O Registers
-            return self.regs[(addr - 0xFF00) as usize];
-        } else if addr >= 0xFF80 && addr <= 0xFFFE { // High RAM
-            return self.wram[(addr - 0xFF80) as usize];
-        } else if addr >= 0xFFFF && addr == 0xFFFF { // Interrupt Enable
-            return self.ei;
+    pub fn print_memory(&mut self) {
+        for i in 0..0x200/0x10 {
+            let mut line = format!("{:#4X}0: ", i);
+            for j in 0..0x10/2 {
+                let mut address = format!("{:2X}{:2X} ",
+                                          self.cart.rom[(i*0x10 + j*2) as usize],
+                                          self.cart.rom[(i*0x10 + j*2 + 1) as usize],
+                );
+                line.push_str(&address);
+            }
+            println!("{}", line);
         }
-
     }
+}
 
+impl GB {
+    pub fn load_application(&mut self, filename: &str) -> bool {
+        self.cart.load_application(filename)
+    }
 }
