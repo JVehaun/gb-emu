@@ -17,4 +17,8 @@ fn main() {
     }
 
     gb.print_memory();
+
+    'main: loop {
+        gb.emulate_cycle();
+    }
 }

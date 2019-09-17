@@ -9,6 +9,7 @@ pub struct GB {
     regs: [u8; 0x80],
     oam: [u8; 0xA0],
     ei: u8,
+    stack: [u8; 0x180],
 }
 
 impl GB {
@@ -21,6 +22,7 @@ impl GB {
             regs: [0; 0x80],
             oam: [0; 0xA0],
             ei: 0,
+            stack: [0; 0x180],
         }
     }
 }
@@ -46,6 +48,40 @@ impl CPU {
             pc: 0,
         };
         return cpu;
+    }
+
+    pub fn get_z(&mut self) -> bool {return ((self.af >> 7) & 0x1) == 0x1 }
+    pub fn get_n(&mut self) -> bool {return ((self.af >> 6) & 0x1) == 0x1 }
+    pub fn get_h(&mut self) -> bool {return ((self.af >> 5) & 0x1) == 0x1 }
+    pub fn get_c(&mut self) -> bool {return ((self.af >> 4) & 0x1) == 0x1 }
+
+    pub fn set_z(&mut self, val: bool) {
+        if self.get_z() {
+            self.af = self.af | (val as u16) << 7;
+        } else {
+            self.af = self.af & !((val as u16) << 7)
+        }
+    }
+    pub fn set_n(&mut self, val: bool) {
+        if self.get_n() {
+            self.af = self.af | (val as u16) << 6;
+        } else {
+            self.af = self.af & !((val as u16) << 6)
+        }
+    }
+    pub fn set_h(&mut self, val: bool) {
+        if self.get_c() {
+            self.af = self.af | (val as u16) << 5;
+        } else {
+            self.af = self.af & !((val as u16) << 5)
+        }
+    }
+    pub fn set_c(&mut self, val: bool) {
+        if self.get_c() {
+            self.af = self.af | (val as u16) << 4;
+        } else {
+            self.af = self.af & !((val as u16) << 4)
+        }
     }
 }
 
@@ -105,8 +141,8 @@ impl GB {
             return self.oam[(addr - 0xFE00) as usize];
         } else if addr >= 0xFF00 && addr <= 0xFF7F { // I/O Registers
             return self.regs[(addr - 0xFF00) as usize];
-        } else if addr >= 0xFF80 && addr <= 0xFFFE { // High RAM
-            return self.wram[(addr - 0xFF80) as usize];
+        } else if addr >= 0xFF80 && addr <= 0xFFFE { // High RAM (Stack)
+            return self.stack[(addr - 0xFF80) as usize];
         } else if addr == 0xFFFF { // Interrupt Enable
             return self.ei;
         }
@@ -131,5 +167,16 @@ impl GB {
 impl GB {
     pub fn load_application(&mut self, filename: &str) -> bool {
         self.cart.load_application(filename)
+    }
+}
+
+impl GB {
+    pub fn emulate_cycle(&mut self) -> u32 {
+        let mut pc_inc: u16 = 0;
+        let mut opcode = (self.mem_read(self.cpu.pc), self.mem_read(self.cpu.pc+1));
+        match opcode {
+            (0xCB, _) => { return 0; }
+            (_, _)  => { return 1; }
+        }
     }
 }
