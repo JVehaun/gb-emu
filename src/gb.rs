@@ -85,8 +85,10 @@ impl CPU {
         else { self.af = self.af & !((val as u16) << 5) }
     }
     pub fn set_cy(&mut self, val: u8) {
-        if val == 1 {self.af = self.af | (val as u16) << 4;}
-        else {self.af = self.af & !((val as u16) << 4)}
+        if val == 1 {self.af = self.af | (1 << 4);}
+        else {
+            self.af = self.af & !(1 << 4);
+        }
     }
 }
 
@@ -296,8 +298,8 @@ impl GB {
     }
 
     fn rrc(&mut self, mut r: u8) -> u8 {
-        let cy = r >> 7;
-        r = (r << 1) | cy;
+        let cy = r & 1;
+        r = (r >> 1) | (cy << 7);
         self.cpu.set_cy(cy);
         if r == 0 {
             self.cpu.set_z(1);
@@ -323,7 +325,7 @@ fn rlc_b_no_carry() {
     gb.cpu.set_cy(1);
     gb.rlc_b();
     assert_eq!(gb.cpu.get_b(), 0b01100110);
-    assert_eq!(gb.cpu.get_cy(), 1);
+    assert_eq!(gb.cpu.get_cy(), 0);
 }
 
 #[test]
@@ -342,7 +344,7 @@ fn rlc_c_no_carry() {
     gb.cpu.set_cy(1);
     gb.rlc_c();
     assert_eq!(gb.cpu.get_c(), 0b01100110);
-    assert_eq!(gb.cpu.get_cy(), 1);
+    assert_eq!(gb.cpu.get_cy(), 0);
 }
 #[test]
 fn rlc_a_carry() {
@@ -360,18 +362,9 @@ fn rlc_a_no_carry() {
     gb.cpu.set_cy(1);
     gb.rlc_a();
     assert_eq!(gb.cpu.get_a(), 0b01100110);
-    assert_eq!(gb.cpu.get_cy(), 1);
+    assert_eq!(gb.cpu.get_cy(), 0);
 }
 
-// #[test]
-// fn rlc_hl_carry() {
-//     let mut gb = GB::new();
-//     gb.cpu.set_hl(0b11001100);
-//     gb.cpu.set_cy(0);
-//     gb.rlc_hl();
-//     assert_eq!(gb.cpu.get_hl(), 0b10011001);
-//     assert_eq!(gb.cpu.get_cy(), 1);
-// }
 #[test]
 fn rlc_hl_carry() {
     let mut gb = GB::new();
@@ -393,5 +386,25 @@ fn rlc_hl_no_carry() {
     gb.cpu.set_cy(1);
     gb.rlc_hl();
     assert_eq!(gb.mem_read(addr), 0b01100110);
+    assert_eq!(gb.cpu.get_cy(), 0);
+}
+
+#[test]
+fn rrc_b_carry() {
+    let mut gb = GB::new();
+    gb.cpu.set_b(0b00110011);
+    gb.cpu.set_cy(0);
+    gb.rrc_b();
+    assert_eq!(gb.cpu.get_b(), 0b10011001);
     assert_eq!(gb.cpu.get_cy(), 1);
+}
+
+#[test]
+fn rrc_b_no_carry() {
+    let mut gb = GB::new();
+    gb.cpu.set_b(0b11001100);
+    gb.cpu.set_cy(1);
+    gb.rrc_b();
+    assert_eq!(gb.cpu.get_b(), 0b01100110);
+    assert_eq!(gb.cpu.get_cy(), 0);
 }
