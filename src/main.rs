@@ -1,4 +1,5 @@
 mod gb;
+mod tests;
 
 use std::env;
 
@@ -12,8 +13,7 @@ fn main() {
     }
     let mut gb = gb::GB::new();
     if !gb.load_application(&args[1]){
-        println!("failed load rom");
-        return
+        panic!("failed load rom");
     }
 
     gb.print_memory();

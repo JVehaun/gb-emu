@@ -4,7 +4,7 @@ use std::io::prelude::*;
 pub struct GB {
     wram: [u8; 8192],
     vram: [u8; 8192],
-    cpu: CPU,
+    pub cpu: CPU,
     cart: Cartridge,
     regs: [u8; 0x80],
     oam: [u8; 0xA0],
@@ -65,38 +65,26 @@ impl CPU {
     pub fn set_h(&mut self, val: u8) { self.hl = (self.hl & 0x00FF) | ((val as u16) << 8) }
     pub fn set_l(&mut self, val: u8) { self.hl = (self.hl & 0xFF00) | (val as u16) }
 
-    pub fn get_z(&mut self) -> bool {return ((self.af >> 7) & 0x1) == 0x1 }
-    pub fn get_n(&mut self) -> bool {return ((self.af >> 6) & 0x1) == 0x1 }
-    pub fn get_hc(&mut self) -> bool {return ((self.af >> 5) & 0x1) == 0x1 }
-    pub fn get_cy(&mut self) -> bool {return ((self.af >> 4) & 0x1) == 0x1 }
+    pub fn get_z(&mut self) -> u8 {return ((self.af >> 7) & 0x1) as u8 }
+    pub fn get_n(&mut self) -> u8 {return ((self.af >> 6) & 0x1) as u8 }
+    pub fn get_hc(&mut self) -> u8 {return ((self.af >> 5) & 0x1) as u8 }
+    pub fn get_cy(&mut self) -> u8 {return ((self.af >> 4) & 0x1) as u8 }
 
-    pub fn set_z(&mut self, val: bool) {
-        if self.get_z() {
-            self.af = self.af | (val as u16) << 7;
-        } else {
-            self.af = self.af & !((val as u16) << 7)
-        }
+    pub fn set_z(&mut self, val: u8) {
+        if val == 1 {self.af = self.af | (val as u16) << 7;}
+        else {self.af = self.af & !((val as u16) << 7)}
     }
-    pub fn set_n(&mut self, val: bool) {
-        if self.get_n() {
-            self.af = self.af | (val as u16) << 6;
-        } else {
-            self.af = self.af & !((val as u16) << 6)
-        }
+    pub fn set_n(&mut self, val: u8) {
+        if val == 1 {self.af = self.af | (val as u16) << 6;}
+        else {self.af = self.af & !((val as u16) << 6)}
     }
-    pub fn set_hc(&mut self, val: bool) {
-        if self.get_hc() {
-            self.af = self.af | (val as u16) << 5;
-        } else {
-            self.af = self.af & !((val as u16) << 5)
-        }
+    pub fn set_hc(&mut self, val: u8) {
+        if val == 1 { self.af = self.af | (val as u16) << 5; }
+        else { self.af = self.af & !((val as u16) << 5) }
     }
-    pub fn set_cy(&mut self, val: bool) {
-        if self.get_cy() {
-            self.af = self.af | (val as u16) << 4;
-        } else {
-            self.af = self.af & !((val as u16) << 4)
-        }
+    pub fn set_cy(&mut self, val: u8) {
+        if val == 1 {self.af = self.af | (val as u16) << 4;}
+        else {self.af = self.af & !((val as u16) << 4)}
     }
 }
 
@@ -190,14 +178,42 @@ impl GB {
         let mut pc_inc: u16 = 0;
         let mut opcode = (self.mem_read(self.cpu.pc), self.mem_read(self.cpu.pc+1));
         match opcode {
-            (0xCB, 0x00) => { // RLC B
-                let b = self.cpu.get_b();
-                let cy = b >> 7;
-                self.cpu.set_cy(cy == 1);
-                self.cpu.set_b((b << 1) | cy );
-                return 8;
-            }
+            (0xCB, 0x00) => { self.rlc_b() }
             (_, _)  => { return 1; }
         }
     }
+
+    fn rlc_b(&mut self) -> u32 {
+        let mut r = self.cpu.get_b();
+        let cy = r >> 7;
+        assert_eq!(cy, 1);
+        r = (r << 1) | cy;
+        self.cpu.set_cy(cy);
+        self.cpu.set_b(r);
+        if r == 0 {
+            self.cpu.set_z(1);
+        }
+        return 8;
+    }
+
+}
+
+#[test]
+fn rlc_b_carry() {
+    let mut gb = GB::new();
+    gb.cpu.set_b(0b11001100);
+    gb.cpu.set_cy(0);
+    gb.rlc_b();
+    assert_eq!(gb.cpu.get_b(), 0b10011001);
+    assert_eq!(gb.cpu.get_cy(), 1);
+}
+
+#[test]
+fn rlc_b_no_carry() {
+    let mut gb = GB::new();
+    gb.cpu.set_b(0b00110011);
+    gb.cpu.set_cy(1);
+    gb.rlc_b();
+    assert_eq!(gb.cpu.get_b(), 0b10011001);
+    assert_eq!(gb.cpu.get_cy(), 1);
 }
