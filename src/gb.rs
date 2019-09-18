@@ -129,6 +129,30 @@ impl Cartridge {
 }
 
 impl GB {
+    fn mem_write(&mut self, addr: u16, val: u8) {
+        if addr <= 0x3FFF {        // ROM Bank
+            self.cart.rom[addr as usize] = val;
+        } else if addr >= 0x4000 && addr <= 0x7FFF { // ROM Bank 1-n
+            self.cart.rom[addr as usize] = val;
+        } else if addr >= 0x8000 && addr <= 0x9FFF { // VRAM
+            self.vram[(addr - 0x8000) as usize] = val;
+        } else if addr >= 0xA000 && addr <= 0xBFFF { // Cart RAM
+            self.cart.ram[(addr - 0xA000) as usize] = val;
+        } else if addr >= 0xC000 && addr <= 0xDFFF { // Low RAM
+            self.wram[(addr - 0xC000) as usize] = val;
+        } else if addr >= 0xE000 && addr <= 0xFDFF { // Low RAM Duplicate
+            self.wram[(addr - 0xE000) as usize] = val;
+        } else if addr >= 0xFE00 && addr <= 0xFE9F { // OAM RAM
+            self.oam[(addr - 0xFE00) as usize] = val;
+        } else if addr >= 0xFF00 && addr <= 0xFF7F { // I/O Registers
+            self.regs[(addr - 0xFF00) as usize] = val;
+        } else if addr >= 0xFF80 && addr <= 0xFFFE { // High RAM (Stack)
+            self.stack[(addr - 0xFF80) as usize] = val;
+        } else if addr == 0xFFFF { // Interrupt Enable
+            self.ei = val;
+        }
+    }
+
     fn mem_read(&mut self, addr: u16) -> u8 {
         if addr <= 0x3FFF {        // ROM Bank
             return self.cart.rom[addr as usize];
@@ -189,10 +213,13 @@ impl GB {
             (0xCB, 0x05) => { self.rlc_l() }
             (0xCB, 0x06) => { self.rlc_hl() }
             (0xCB, 0x07) => { self.rlc_a() }
+            //RRC
+            (0xCB, 0x08) => { self.rrc_b() }
             (_, _)  => { panic!("Unknown opcode") }
         }
     }
 
+    // RLC opcodes
     fn rlc_b(&mut self) -> u32 {
         let mut r = self.cpu.get_b();
         r = self.rlc(r);
@@ -243,14 +270,10 @@ impl GB {
     }
 
     fn rlc_hl(&mut self) -> u32 {
-        let mut r = self.cpu.get_hl();
-        let cy = r >> 15;
-        r = (r << 1) | cy;
-        self.cpu.set_cy(cy as u8);
-        if r == 0 {
-            self.cpu.set_z(1);
-        }
-        self.cpu.set_hl(r);
+        let addr = self.cpu.get_hl();
+        let mut r = self.mem_read(addr);
+        r = self.rlc(r);
+        self.mem_write(addr, r);
         return 8;
     }
 
@@ -264,6 +287,23 @@ impl GB {
         return r;
     }
 
+    // RRC opcodes
+    fn rrc_b(&mut self) -> u32 {
+        let mut r = self.cpu.get_b();
+        r = self.rrc(r);
+        self.cpu.set_b(r);
+        return 8;
+    }
+
+    fn rrc(&mut self, mut r: u8) -> u8 {
+        let cy = r >> 7;
+        r = (r << 1) | cy;
+        self.cpu.set_cy(cy);
+        if r == 0 {
+            self.cpu.set_z(1);
+        }
+        return r;
+    }
 
 }
 
@@ -304,7 +344,6 @@ fn rlc_c_no_carry() {
     assert_eq!(gb.cpu.get_c(), 0b01100110);
     assert_eq!(gb.cpu.get_cy(), 1);
 }
-
 #[test]
 fn rlc_a_carry() {
     let mut gb = GB::new();
@@ -324,22 +363,35 @@ fn rlc_a_no_carry() {
     assert_eq!(gb.cpu.get_cy(), 1);
 }
 
+// #[test]
+// fn rlc_hl_carry() {
+//     let mut gb = GB::new();
+//     gb.cpu.set_hl(0b11001100);
+//     gb.cpu.set_cy(0);
+//     gb.rlc_hl();
+//     assert_eq!(gb.cpu.get_hl(), 0b10011001);
+//     assert_eq!(gb.cpu.get_cy(), 1);
+// }
 #[test]
 fn rlc_hl_carry() {
     let mut gb = GB::new();
-    gb.cpu.set_hl(0b1100110011001100);
-    gb.cpu.set_cy(0);
+    let addr = 0xC000;
+    gb.cpu.set_hl(addr);
+    gb.mem_write(addr, 0b11001100);
+    gb.cpu.set_cy(1);
     gb.rlc_hl();
-    assert_eq!(gb.cpu.get_hl(), 0b1001100110011001);
+    assert_eq!(gb.mem_read(addr), 0b10011001);
     assert_eq!(gb.cpu.get_cy(), 1);
 }
 
 #[test]
 fn rlc_hl_no_carry() {
     let mut gb = GB::new();
-    gb.cpu.set_hl(0b0011001100110011);
+    let addr = 0xC000;
+    gb.cpu.set_hl(addr);
+    gb.mem_write(addr, 0b00110011);
     gb.cpu.set_cy(1);
     gb.rlc_hl();
-    assert_eq!(gb.cpu.get_hl(), 0b0110011001100110);
+    assert_eq!(gb.mem_read(addr), 0b01100110);
     assert_eq!(gb.cpu.get_cy(), 1);
 }
