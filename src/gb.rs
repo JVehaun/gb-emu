@@ -260,6 +260,15 @@ impl GB {
             (0xCB, 0x2D) => { GB::shift_l(self, &GB::sra) }
             (0xCB, 0x2E) => { GB::shift_mem(self, &GB::sra) }
             (0xCB, 0x2F) => { GB::shift_a(self, &GB::sra) }
+            // SRL
+            (0xCB, 0x38) => { GB::shift_b(self, &GB::srl) }
+            (0xCB, 0x39) => { GB::shift_c(self, &GB::srl) }
+            (0xCB, 0x3A) => { GB::shift_d(self, &GB::srl) }
+            (0xCB, 0x3B) => { GB::shift_e(self, &GB::srl) }
+            (0xCB, 0x3C) => { GB::shift_h(self, &GB::srl) }
+            (0xCB, 0x3D) => { GB::shift_l(self, &GB::srl) }
+            (0xCB, 0x3E) => { GB::shift_mem(self, &GB::srl) }
+            (0xCB, 0x3F) => { GB::shift_a(self, &GB::srl) }
             (_, _)  => { panic!("Unknown opcode") }
         }
     }
@@ -365,6 +374,15 @@ impl GB {
         self.cpu.set_cy(cy);
         let sign = r >> 7;
         r = (r >> 1) | (sign << 7);
+        if r == 0 {
+            self.cpu.set_z(1);
+        }
+        return r;
+    }
+    fn srl(&mut self, mut r: u8) -> u8 {
+        let cy = r & 1;
+        r = (r >> 1);
+        self.cpu.set_cy(cy);
         if r == 0 {
             self.cpu.set_z(1);
         }
@@ -627,5 +645,48 @@ fn sra_hl_negative() {
     gb.cpu.set_cy(0);
     GB::shift_mem(&mut gb, &GB::sra);
     assert_eq!(gb.mem_read(addr), 0b11100110);
+    assert_eq!(gb.cpu.get_cy(), 1);
+}
+
+
+// SRL Tests
+#[test]
+fn srl_b_positive() {
+    let mut gb = GB::new();
+    gb.cpu.set_b(0b00110010);
+    gb.cpu.set_cy(1);
+    GB::shift_b(&mut gb, &GB::srl);
+    assert_eq!(gb.cpu.get_b(), 0b00011001);
+    assert_eq!(gb.cpu.get_cy(), 0);
+}
+#[test]
+fn srl_b_negative() {
+    let mut gb = GB::new();
+    gb.cpu.set_b(0b11001101);
+    gb.cpu.set_cy(0);
+    GB::shift_b(&mut gb, &GB::srl);
+    assert_eq!(gb.cpu.get_b(), 0b01100110);
+    assert_eq!(gb.cpu.get_cy(), 1);
+}
+#[test]
+fn srl_hl_positive() {
+    let mut gb = GB::new();
+    let addr = 0xC000;
+    gb.cpu.set_hl(addr);
+    gb.mem_write(addr, 0b00110010);
+    gb.cpu.set_cy(1);
+    GB::shift_mem(&mut gb, &GB::srl);
+    assert_eq!(gb.mem_read(addr), 0b00011001);
+    assert_eq!(gb.cpu.get_cy(), 0);
+}
+#[test]
+fn srl_hl_negative() {
+    let mut gb = GB::new();
+    let addr = 0xC000;
+    gb.cpu.set_hl(addr);
+    gb.mem_write(addr, 0b11001101);
+    gb.cpu.set_cy(0);
+    GB::shift_mem(&mut gb, &GB::srl);
+    assert_eq!(gb.mem_read(addr), 0b01100110);
     assert_eq!(gb.cpu.get_cy(), 1);
 }
