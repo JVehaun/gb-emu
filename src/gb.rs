@@ -57,18 +57,18 @@ impl CPU {
     pub fn get_h(&mut self) -> u8 {return ((self.hl >> 8) & 0xFF) as u8 }
     pub fn get_l(&mut self) -> u8 {return ((self.hl) & 0xFF) as u8 }
 
-    pub fn set_a(&mut self, val: u8) { (self.af & 0x00FF) | ((val as u16) << 8) }
-    pub fn set_b(&mut self, val: u8) { (self.bc & 0x00FF) | ((val as u16) << 8) }
-    pub fn set_c(&mut self, val: u8) { (self.bc & 0xFF00) | (val as u16) }
-    pub fn set_d(&mut self, val: u8) { (self.de & 0x00FF) | ((val as u16) << 8) }
-    pub fn set_e(&mut self, val: u8) { (self.de & 0xFF00) | (val as u16) }
-    pub fn set_h(&mut self, val: u8) { (self.hl & 0x00FF) | ((val as u16) << 8) }
-    pub fn set_l(&mut self, val: u8) { (self.hl & 0xFF00) | (val as u16) }
+    pub fn set_a(&mut self, val: u8) { self.af = (self.af & 0x00FF) | ((val as u16) << 8) }
+    pub fn set_b(&mut self, val: u8) { self.bc = (self.bc & 0x00FF) | ((val as u16) << 8) }
+    pub fn set_c(&mut self, val: u8) { self.bc = (self.bc & 0xFF00) | (val as u16) }
+    pub fn set_d(&mut self, val: u8) { self.de = (self.de & 0x00FF) | ((val as u16) << 8) }
+    pub fn set_e(&mut self, val: u8) { self.de = (self.de & 0xFF00) | (val as u16) }
+    pub fn set_h(&mut self, val: u8) { self.hl = (self.hl & 0x00FF) | ((val as u16) << 8) }
+    pub fn set_l(&mut self, val: u8) { self.hl = (self.hl & 0xFF00) | (val as u16) }
 
     pub fn get_z(&mut self) -> bool {return ((self.af >> 7) & 0x1) == 0x1 }
     pub fn get_n(&mut self) -> bool {return ((self.af >> 6) & 0x1) == 0x1 }
-    pub fn get_h(&mut self) -> bool {return ((self.af >> 5) & 0x1) == 0x1 }
-    pub fn get_c(&mut self) -> bool {return ((self.af >> 4) & 0x1) == 0x1 }
+    pub fn get_hc(&mut self) -> bool {return ((self.af >> 5) & 0x1) == 0x1 }
+    pub fn get_cy(&mut self) -> bool {return ((self.af >> 4) & 0x1) == 0x1 }
 
     pub fn set_z(&mut self, val: bool) {
         if self.get_z() {
@@ -84,15 +84,15 @@ impl CPU {
             self.af = self.af & !((val as u16) << 6)
         }
     }
-    pub fn set_h(&mut self, val: bool) {
-        if self.get_c() {
+    pub fn set_hc(&mut self, val: bool) {
+        if self.get_hc() {
             self.af = self.af | (val as u16) << 5;
         } else {
             self.af = self.af & !((val as u16) << 5)
         }
     }
-    pub fn set_c(&mut self, val: bool) {
-        if self.get_c() {
+    pub fn set_cy(&mut self, val: bool) {
+        if self.get_cy() {
             self.af = self.af | (val as u16) << 4;
         } else {
             self.af = self.af & !((val as u16) << 4)
@@ -190,7 +190,10 @@ impl GB {
         let mut pc_inc: u16 = 0;
         let mut opcode = (self.mem_read(self.cpu.pc), self.mem_read(self.cpu.pc+1));
         match opcode {
-            (0xCB, _) => { return 0; }
+            (0xCB, 0x00) => { // RLC B
+                let old_carry = self.cpu
+                return 0;
+            }
             (_, _)  => { return 1; }
         }
     }
