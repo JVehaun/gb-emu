@@ -225,26 +225,32 @@ impl GB {
             (0xCB, 0x0E) => { GB::shift_mem(self, &GB::rrc) }
             (0xCB, 0x0F) => { GB::shift_a(self, &GB::rrc) }
             // RL
-            (0xCB, 0x00) => { GB::shift_b(self, &GB::rl) }
-            (0xCB, 0x01) => { GB::shift_c(self, &GB::rl) }
-            (0xCB, 0x02) => { GB::shift_d(self, &GB::rl) }
-            (0xCB, 0x03) => { GB::shift_e(self, &GB::rl) }
-            (0xCB, 0x04) => { GB::shift_h(self, &GB::rl) }
-            (0xCB, 0x05) => { GB::shift_l(self, &GB::rl) }
-            (0xCB, 0x06) => { GB::shift_mem(self, &GB::rl) }
-            (0xCB, 0x07) => { GB::shift_a(self, &GB::rl) }
+            (0xCB, 0x10) => { GB::shift_b(self, &GB::rl) }
+            (0xCB, 0x11) => { GB::shift_c(self, &GB::rl) }
+            (0xCB, 0x12) => { GB::shift_d(self, &GB::rl) }
+            (0xCB, 0x13) => { GB::shift_e(self, &GB::rl) }
+            (0xCB, 0x14) => { GB::shift_h(self, &GB::rl) }
+            (0xCB, 0x15) => { GB::shift_l(self, &GB::rl) }
+            (0xCB, 0x16) => { GB::shift_mem(self, &GB::rl) }
+            (0xCB, 0x17) => { GB::shift_a(self, &GB::rl) }
             // RR
-            (0xCB, 0x08) => { GB::shift_b(self, &GB::rr) }
-            (0xCB, 0x09) => { GB::shift_c(self, &GB::rr) }
-            (0xCB, 0x0A) => { GB::shift_d(self, &GB::rr) }
-            (0xCB, 0x0B) => { GB::shift_e(self, &GB::rr) }
-            (0xCB, 0x0C) => { GB::shift_h(self, &GB::rr) }
-            (0xCB, 0x0D) => { GB::shift_l(self, &GB::rr) }
-            (0xCB, 0x0E) => { GB::shift_mem(self, &GB::rr) }
-            (0xCB, 0x0F) => { GB::shift_a(self, &GB::rr) }
-            // RL
-            // (0xCB, 0x08) => { self.rrc_b() }
-            // RR
+            (0xCB, 0x18) => { GB::shift_b(self, &GB::rr) }
+            (0xCB, 0x19) => { GB::shift_c(self, &GB::rr) }
+            (0xCB, 0x1A) => { GB::shift_d(self, &GB::rr) }
+            (0xCB, 0x1B) => { GB::shift_e(self, &GB::rr) }
+            (0xCB, 0x1C) => { GB::shift_h(self, &GB::rr) }
+            (0xCB, 0x1D) => { GB::shift_l(self, &GB::rr) }
+            (0xCB, 0x1E) => { GB::shift_mem(self, &GB::rr) }
+            (0xCB, 0x1F) => { GB::shift_a(self, &GB::rr) }
+            // SLA
+            (0xCB, 0x20) => { GB::shift_b(self, &GB::sla) }
+            (0xCB, 0x21) => { GB::shift_c(self, &GB::sla) }
+            (0xCB, 0x22) => { GB::shift_d(self, &GB::sla) }
+            (0xCB, 0x23) => { GB::shift_e(self, &GB::sla) }
+            (0xCB, 0x24) => { GB::shift_h(self, &GB::sla) }
+            (0xCB, 0x25) => { GB::shift_l(self, &GB::sla) }
+            (0xCB, 0x26) => { GB::shift_mem(self, &GB::sla) }
+            (0xCB, 0x27) => { GB::shift_a(self, &GB::sla) }
             (_, _)  => { panic!("Unknown opcode") }
         }
     }
@@ -299,6 +305,7 @@ impl GB {
         return 16;
     }
 
+    // Shifting functions
     fn rlc(&mut self, mut r: u8) -> u8 {
         let cy = r >> 7;
         r = (r << 1) | cy;
@@ -329,6 +336,15 @@ impl GB {
     fn rr(&mut self, mut r: u8) -> u8 {
         let cy = r & 1;
         r = (r >> 1) | (self.cpu.get_cy() << 7);
+        self.cpu.set_cy(cy);
+        if r == 0 {
+            self.cpu.set_z(1);
+        }
+        return r;
+    }
+    fn sla(&mut self, mut r: u8) -> u8 {
+        let cy = r >> 7;
+        r = (r << 1);
         self.cpu.set_cy(cy);
         if r == 0 {
             self.cpu.set_z(1);
@@ -463,6 +479,49 @@ fn rl_hl_no_carry() {
     gb.cpu.set_cy(1);
     GB::shift_mem(&mut gb, &GB::rl);
     assert_eq!(gb.mem_read(addr), 0b01100111);
+    assert_eq!(gb.cpu.get_cy(), 0);
+}
+
+
+// SLA Tests
+#[test]
+fn sla_b_carry() {
+    let mut gb = GB::new();
+    gb.cpu.set_b(0b11001100);
+    gb.cpu.set_cy(0);
+    GB::shift_b(&mut gb, &GB::sla);
+    assert_eq!(gb.cpu.get_b(), 0b10011000);
+    assert_eq!(gb.cpu.get_cy(), 1);
+}
+#[test]
+fn sla_b_no_carry() {
+    let mut gb = GB::new();
+    gb.cpu.set_b(0b00110011);
+    gb.cpu.set_cy(1);
+    GB::shift_b(&mut gb, &GB::sla);
+    assert_eq!(gb.cpu.get_b(), 0b01100110);
+    assert_eq!(gb.cpu.get_cy(), 0);
+}
+#[test]
+fn sla_hl_carry() {
+    let mut gb = GB::new();
+    let addr = 0xC000;
+    gb.cpu.set_hl(addr);
+    gb.mem_write(addr, 0b11001100);
+    gb.cpu.set_cy(0);
+    GB::shift_mem(&mut gb, &GB::sla);
+    assert_eq!(gb.mem_read(addr), 0b10011000);
+    assert_eq!(gb.cpu.get_cy(), 1);
+}
+#[test]
+fn sla_hl_no_carry() {
+    let mut gb = GB::new();
+    let addr = 0xC000;
+    gb.cpu.set_hl(addr);
+    gb.mem_write(addr, 0b00110011);
+    gb.cpu.set_cy(1);
+    GB::shift_mem(&mut gb, &GB::sla);
+    assert_eq!(gb.mem_read(addr), 0b01100110);
     assert_eq!(gb.cpu.get_cy(), 0);
 }
 
