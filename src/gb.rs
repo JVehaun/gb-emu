@@ -251,6 +251,15 @@ impl GB {
             (0xCB, 0x25) => { GB::shift_l(self, &GB::sla) }
             (0xCB, 0x26) => { GB::shift_mem(self, &GB::sla) }
             (0xCB, 0x27) => { GB::shift_a(self, &GB::sla) }
+            // SRA
+            (0xCB, 0x28) => { GB::shift_b(self, &GB::sra) }
+            (0xCB, 0x29) => { GB::shift_c(self, &GB::sra) }
+            (0xCB, 0x2A) => { GB::shift_d(self, &GB::sra) }
+            (0xCB, 0x2B) => { GB::shift_e(self, &GB::sra) }
+            (0xCB, 0x2C) => { GB::shift_h(self, &GB::sra) }
+            (0xCB, 0x2D) => { GB::shift_l(self, &GB::sra) }
+            (0xCB, 0x2E) => { GB::shift_mem(self, &GB::sra) }
+            (0xCB, 0x2F) => { GB::shift_a(self, &GB::sra) }
             (_, _)  => { panic!("Unknown opcode") }
         }
     }
@@ -346,6 +355,16 @@ impl GB {
         let cy = r >> 7;
         r = (r << 1);
         self.cpu.set_cy(cy);
+        if r == 0 {
+            self.cpu.set_z(1);
+        }
+        return r;
+    }
+    fn sra(&mut self, mut r: u8) -> u8 {
+        let cy = r & 1;
+        self.cpu.set_cy(cy);
+        let sign = r >> 7;
+        r = (r >> 1) | (sign << 7);
         if r == 0 {
             self.cpu.set_z(1);
         }
@@ -483,6 +502,49 @@ fn rl_hl_no_carry() {
 }
 
 
+// RR Tests
+#[test]
+fn rr_b_carry() {
+    let mut gb = GB::new();
+    gb.cpu.set_b(0b00110011);
+    gb.cpu.set_cy(0);
+    GB::shift_b(&mut gb, &GB::rr);
+    assert_eq!(gb.cpu.get_b(), 0b00011001);
+    assert_eq!(gb.cpu.get_cy(), 1);
+}
+#[test]
+fn rr_b_no_carry() {
+    let mut gb = GB::new();
+    gb.cpu.set_b(0b11001100);
+    gb.cpu.set_cy(1);
+    GB::shift_b(&mut gb, &GB::rr);
+    assert_eq!(gb.cpu.get_b(), 0b11100110);
+    assert_eq!(gb.cpu.get_cy(), 0);
+}
+#[test]
+fn rr_hl_carry() {
+    let mut gb = GB::new();
+    let addr = 0xC000;
+    gb.cpu.set_hl(addr);
+    gb.mem_write(addr, 0b00110011);
+    gb.cpu.set_cy(0);
+    GB::shift_mem(&mut gb, &GB::rr);
+    assert_eq!(gb.mem_read(addr), 0b00011001);
+    assert_eq!(gb.cpu.get_cy(), 1);
+}
+#[test]
+fn rr_hl_no_carry() {
+    let mut gb = GB::new();
+    let addr = 0xC000;
+    gb.cpu.set_hl(addr);
+    gb.mem_write(addr, 0b11001100);
+    gb.cpu.set_cy(1);
+    GB::shift_mem(&mut gb, &GB::rr);
+    assert_eq!(gb.mem_read(addr), 0b11100110);
+    assert_eq!(gb.cpu.get_cy(), 0);
+}
+
+
 // SLA Tests
 #[test]
 fn sla_b_carry() {
@@ -526,44 +588,44 @@ fn sla_hl_no_carry() {
 }
 
 
-// RR Tests
+// SRA Tests
 #[test]
-fn rr_b_carry() {
+fn sra_b_positive() {
     let mut gb = GB::new();
-    gb.cpu.set_b(0b00110011);
-    gb.cpu.set_cy(0);
-    GB::shift_b(&mut gb, &GB::rr);
+    gb.cpu.set_b(0b00110010);
+    gb.cpu.set_cy(1);
+    GB::shift_b(&mut gb, &GB::sra);
     assert_eq!(gb.cpu.get_b(), 0b00011001);
-    assert_eq!(gb.cpu.get_cy(), 1);
-}
-#[test]
-fn rr_b_no_carry() {
-    let mut gb = GB::new();
-    gb.cpu.set_b(0b11001100);
-    gb.cpu.set_cy(1);
-    GB::shift_b(&mut gb, &GB::rr);
-    assert_eq!(gb.cpu.get_b(), 0b11100110);
     assert_eq!(gb.cpu.get_cy(), 0);
 }
 #[test]
-fn rr_hl_carry() {
+fn sra_b_negative() {
     let mut gb = GB::new();
-    let addr = 0xC000;
-    gb.cpu.set_hl(addr);
-    gb.mem_write(addr, 0b00110011);
+    gb.cpu.set_b(0b11001101);
     gb.cpu.set_cy(0);
-    GB::shift_mem(&mut gb, &GB::rr);
-    assert_eq!(gb.mem_read(addr), 0b00011001);
+    GB::shift_b(&mut gb, &GB::sra);
+    assert_eq!(gb.cpu.get_b(), 0b11100110);
     assert_eq!(gb.cpu.get_cy(), 1);
 }
 #[test]
-fn rr_hl_no_carry() {
+fn sra_hl_positive() {
     let mut gb = GB::new();
     let addr = 0xC000;
     gb.cpu.set_hl(addr);
-    gb.mem_write(addr, 0b11001100);
+    gb.mem_write(addr, 0b00110010);
     gb.cpu.set_cy(1);
-    GB::shift_mem(&mut gb, &GB::rr);
-    assert_eq!(gb.mem_read(addr), 0b11100110);
+    GB::shift_mem(&mut gb, &GB::sra);
+    assert_eq!(gb.mem_read(addr), 0b00011001);
     assert_eq!(gb.cpu.get_cy(), 0);
+}
+#[test]
+fn sra_hl_negative() {
+    let mut gb = GB::new();
+    let addr = 0xC000;
+    gb.cpu.set_hl(addr);
+    gb.mem_write(addr, 0b11001101);
+    gb.cpu.set_cy(0);
+    GB::shift_mem(&mut gb, &GB::sra);
+    assert_eq!(gb.mem_read(addr), 0b11100110);
+    assert_eq!(gb.cpu.get_cy(), 1);
 }
