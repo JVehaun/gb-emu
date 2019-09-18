@@ -176,25 +176,37 @@ impl GB {
 impl GB {
     pub fn emulate_cycle(&mut self) -> u32 {
         let mut pc_inc: u16 = 0;
-        let mut opcode = (self.mem_read(self.cpu.pc), self.mem_read(self.cpu.pc+1));
+        let opcode = (self.mem_read(self.cpu.pc), self.mem_read(self.cpu.pc+1));
         match opcode {
             (0xCB, 0x00) => { self.rlc_b() }
-            (_, _)  => { return 1; }
+            // (0xCB, 0x01) => { self.rlc_c() }
+            // (0xCB, 0x02) => { self.rlc_d() }
+            // (0xCB, 0x03) => { self.rlc_e() }
+            // (0xCB, 0x04) => { self.rlc_h() }
+            // (0xCB, 0x05) => { self.rlc_l() }
+            // (0xCB, 0x06) => { /* RLC (HL) */ }
+            // (0xCB, 0x07) => { self.rlc_a() }
+            (_, _)  => { panic!("Unknown opcode") }
         }
     }
 
     fn rlc_b(&mut self) -> u32 {
         let mut r = self.cpu.get_b();
+        r = self.rlc(r);
+        self.cpu.set_b(r);
+        return 8;
+    }
+
+    fn rlc(&mut self, mut r: u8) -> u8 {
         let cy = r >> 7;
-        assert_eq!(cy, 1);
         r = (r << 1) | cy;
         self.cpu.set_cy(cy);
-        self.cpu.set_b(r);
         if r == 0 {
             self.cpu.set_z(1);
         }
-        return 8;
+        return r;
     }
+
 
 }
 
@@ -214,6 +226,6 @@ fn rlc_b_no_carry() {
     gb.cpu.set_b(0b00110011);
     gb.cpu.set_cy(1);
     gb.rlc_b();
-    assert_eq!(gb.cpu.get_b(), 0b10011001);
+    assert_eq!(gb.cpu.get_b(), 0b01100110);
     assert_eq!(gb.cpu.get_cy(), 1);
 }
