@@ -49,6 +49,21 @@ impl CPU {
         };
         return cpu;
     }
+    pub fn get_a(&mut self) -> u8 {return ((self.af >> 8) & 0xFF) as u8 }
+    pub fn get_b(&mut self) -> u8 {return ((self.bc >> 8) & 0xFF) as u8 }
+    pub fn get_c(&mut self) -> u8 {return ((self.bc) & 0xFF) as u8 }
+    pub fn get_d(&mut self) -> u8 {return ((self.de >> 8) & 0xFF) as u8 }
+    pub fn get_e(&mut self) -> u8 {return ((self.de) & 0xFF) as u8 }
+    pub fn get_h(&mut self) -> u8 {return ((self.hl >> 8) & 0xFF) as u8 }
+    pub fn get_l(&mut self) -> u8 {return ((self.hl) & 0xFF) as u8 }
+
+    pub fn set_a(&mut self, val: u8) { (self.af & 0x00FF) | ((val as u16) << 8) }
+    pub fn set_b(&mut self, val: u8) { (self.bc & 0x00FF) | ((val as u16) << 8) }
+    pub fn set_c(&mut self, val: u8) { (self.bc & 0xFF00) | (val as u16) }
+    pub fn set_d(&mut self, val: u8) { (self.de & 0x00FF) | ((val as u16) << 8) }
+    pub fn set_e(&mut self, val: u8) { (self.de & 0xFF00) | (val as u16) }
+    pub fn set_h(&mut self, val: u8) { (self.hl & 0x00FF) | ((val as u16) << 8) }
+    pub fn set_l(&mut self, val: u8) { (self.hl & 0xFF00) | (val as u16) }
 
     pub fn get_z(&mut self) -> bool {return ((self.af >> 7) & 0x1) == 0x1 }
     pub fn get_n(&mut self) -> bool {return ((self.af >> 6) & 0x1) == 0x1 }
