@@ -191,8 +191,11 @@ impl GB {
         let mut opcode = (self.mem_read(self.cpu.pc), self.mem_read(self.cpu.pc+1));
         match opcode {
             (0xCB, 0x00) => { // RLC B
-                let old_carry = self.cpu
-                return 0;
+                let b = self.cpu.get_b();
+                let cy = b >> 7;
+                self.cpu.set_cy(cy == 1);
+                self.cpu.set_b((b << 1) | cy );
+                return 8;
             }
             (_, _)  => { return 1; }
         }
