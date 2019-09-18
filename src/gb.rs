@@ -56,6 +56,7 @@ impl CPU {
     pub fn get_e(&mut self) -> u8 {return ((self.de) & 0xFF) as u8 }
     pub fn get_h(&mut self) -> u8 {return ((self.hl >> 8) & 0xFF) as u8 }
     pub fn get_l(&mut self) -> u8 {return ((self.hl) & 0xFF) as u8 }
+    pub fn get_hl(&mut self) -> u16 { return self.hl }
 
     pub fn set_a(&mut self, val: u8) { self.af = (self.af & 0x00FF) | ((val as u16) << 8) }
     pub fn set_b(&mut self, val: u8) { self.bc = (self.bc & 0x00FF) | ((val as u16) << 8) }
@@ -64,6 +65,7 @@ impl CPU {
     pub fn set_e(&mut self, val: u8) { self.de = (self.de & 0xFF00) | (val as u16) }
     pub fn set_h(&mut self, val: u8) { self.hl = (self.hl & 0x00FF) | ((val as u16) << 8) }
     pub fn set_l(&mut self, val: u8) { self.hl = (self.hl & 0xFF00) | (val as u16) }
+    pub fn set_hl(&mut self, val: u16) { self.hl = val }
 
     pub fn get_z(&mut self) -> u8 {return ((self.af >> 7) & 0x1) as u8 }
     pub fn get_n(&mut self) -> u8 {return ((self.af >> 6) & 0x1) as u8 }
@@ -178,14 +180,15 @@ impl GB {
         let mut pc_inc: u16 = 0;
         let opcode = (self.mem_read(self.cpu.pc), self.mem_read(self.cpu.pc+1));
         match opcode {
+            // RLC
             (0xCB, 0x00) => { self.rlc_b() }
-            // (0xCB, 0x01) => { self.rlc_c() }
-            // (0xCB, 0x02) => { self.rlc_d() }
-            // (0xCB, 0x03) => { self.rlc_e() }
-            // (0xCB, 0x04) => { self.rlc_h() }
-            // (0xCB, 0x05) => { self.rlc_l() }
-            // (0xCB, 0x06) => { /* RLC (HL) */ }
-            // (0xCB, 0x07) => { self.rlc_a() }
+            (0xCB, 0x01) => { self.rlc_c() }
+            (0xCB, 0x02) => { self.rlc_d() }
+            (0xCB, 0x03) => { self.rlc_e() }
+            (0xCB, 0x04) => { self.rlc_h() }
+            (0xCB, 0x05) => { self.rlc_l() }
+            (0xCB, 0x06) => { self.rlc_hl() }
+            (0xCB, 0x07) => { self.rlc_a() }
             (_, _)  => { panic!("Unknown opcode") }
         }
     }
@@ -194,6 +197,60 @@ impl GB {
         let mut r = self.cpu.get_b();
         r = self.rlc(r);
         self.cpu.set_b(r);
+        return 8;
+    }
+
+    fn rlc_c(&mut self) -> u32 {
+        let mut r = self.cpu.get_c();
+        r = self.rlc(r);
+        self.cpu.set_c(r);
+        return 8;
+    }
+
+    fn rlc_d(&mut self) -> u32 {
+        let mut r = self.cpu.get_d();
+        r = self.rlc(r);
+        self.cpu.set_d(r);
+        return 8;
+    }
+
+    fn rlc_e(&mut self) -> u32 {
+        let mut r = self.cpu.get_e();
+        r = self.rlc(r);
+        self.cpu.set_e(r);
+        return 8;
+    }
+
+    fn rlc_h(&mut self) -> u32 {
+        let mut r = self.cpu.get_h();
+        r = self.rlc(r);
+        self.cpu.set_h(r);
+        return 8;
+    }
+
+    fn rlc_l(&mut self) -> u32 {
+        let mut r = self.cpu.get_l();
+        r = self.rlc(r);
+        self.cpu.set_l(r);
+        return 8;
+    }
+
+    fn rlc_a(&mut self) -> u32 {
+        let mut r = self.cpu.get_a();
+        r = self.rlc(r);
+        self.cpu.set_a(r);
+        return 8;
+    }
+
+    fn rlc_hl(&mut self) -> u32 {
+        let mut r = self.cpu.get_hl();
+        let cy = r >> 15;
+        r = (r << 1) | cy;
+        self.cpu.set_cy(cy as u8);
+        if r == 0 {
+            self.cpu.set_z(1);
+        }
+        self.cpu.set_hl(r);
         return 8;
     }
 
@@ -219,7 +276,6 @@ fn rlc_b_carry() {
     assert_eq!(gb.cpu.get_b(), 0b10011001);
     assert_eq!(gb.cpu.get_cy(), 1);
 }
-
 #[test]
 fn rlc_b_no_carry() {
     let mut gb = GB::new();
@@ -227,5 +283,63 @@ fn rlc_b_no_carry() {
     gb.cpu.set_cy(1);
     gb.rlc_b();
     assert_eq!(gb.cpu.get_b(), 0b01100110);
+    assert_eq!(gb.cpu.get_cy(), 1);
+}
+
+#[test]
+fn rlc_c_carry() {
+    let mut gb = GB::new();
+    gb.cpu.set_c(0b11001100);
+    gb.cpu.set_cy(0);
+    gb.rlc_c();
+    assert_eq!(gb.cpu.get_c(), 0b10011001);
+    assert_eq!(gb.cpu.get_cy(), 1);
+}
+#[test]
+fn rlc_c_no_carry() {
+    let mut gb = GB::new();
+    gb.cpu.set_c(0b00110011);
+    gb.cpu.set_cy(1);
+    gb.rlc_c();
+    assert_eq!(gb.cpu.get_c(), 0b01100110);
+    assert_eq!(gb.cpu.get_cy(), 1);
+}
+
+#[test]
+fn rlc_a_carry() {
+    let mut gb = GB::new();
+    gb.cpu.set_a(0b11001100);
+    gb.cpu.set_cy(0);
+    gb.rlc_a();
+    assert_eq!(gb.cpu.get_a(), 0b10011001);
+    assert_eq!(gb.cpu.get_cy(), 1);
+}
+#[test]
+fn rlc_a_no_carry() {
+    let mut gb = GB::new();
+    gb.cpu.set_a(0b00110011);
+    gb.cpu.set_cy(1);
+    gb.rlc_a();
+    assert_eq!(gb.cpu.get_a(), 0b01100110);
+    assert_eq!(gb.cpu.get_cy(), 1);
+}
+
+#[test]
+fn rlc_hl_carry() {
+    let mut gb = GB::new();
+    gb.cpu.set_hl(0b1100110011001100);
+    gb.cpu.set_cy(0);
+    gb.rlc_hl();
+    assert_eq!(gb.cpu.get_hl(), 0b1001100110011001);
+    assert_eq!(gb.cpu.get_cy(), 1);
+}
+
+#[test]
+fn rlc_hl_no_carry() {
+    let mut gb = GB::new();
+    gb.cpu.set_hl(0b0011001100110011);
+    gb.cpu.set_cy(1);
+    gb.rlc_hl();
+    assert_eq!(gb.cpu.get_hl(), 0b0110011001100110);
     assert_eq!(gb.cpu.get_cy(), 1);
 }
