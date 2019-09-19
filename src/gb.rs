@@ -420,6 +420,78 @@ impl GB {
             (0xCB, 0xBD) => { GB::shift_l(self, &GB::res_7) }
             (0xCB, 0xBE) => { GB::shift_mem(self, &GB::res_7) }
             (0xCB, 0xBF) => { GB::shift_a(self, &GB::res_7) }
+            // SET 0
+            (0xCB, 0xC0) => { GB::shift_b(self, &GB::set_0) }
+            (0xCB, 0xC1) => { GB::shift_c(self, &GB::set_0) }
+            (0xCB, 0xC2) => { GB::shift_d(self, &GB::set_0) }
+            (0xCB, 0xC3) => { GB::shift_e(self, &GB::set_0) }
+            (0xCB, 0xC4) => { GB::shift_h(self, &GB::set_0) }
+            (0xCB, 0xC5) => { GB::shift_l(self, &GB::set_0) }
+            (0xCB, 0xC6) => { GB::shift_mem(self, &GB::set_0) }
+            (0xCB, 0xC7) => { GB::shift_a(self, &GB::set_0) }
+            // SET 1
+            (0xCB, 0xC8) => { GB::shift_b(self, &GB::set_1) }
+            (0xCB, 0xC9) => { GB::shift_c(self, &GB::set_1) }
+            (0xCB, 0xCA) => { GB::shift_d(self, &GB::set_1) }
+            (0xCB, 0xCB) => { GB::shift_e(self, &GB::set_1) }
+            (0xCB, 0xCC) => { GB::shift_h(self, &GB::set_1) }
+            (0xCB, 0xCD) => { GB::shift_l(self, &GB::set_1) }
+            (0xCB, 0xCE) => { GB::shift_mem(self, &GB::set_1) }
+            (0xCB, 0xCF) => { GB::shift_a(self, &GB::set_1) }
+            // SET 2
+            (0xCB, 0xD0) => { GB::shift_b(self, &GB::set_2) }
+            (0xCB, 0xD1) => { GB::shift_c(self, &GB::set_2) }
+            (0xCB, 0xD2) => { GB::shift_d(self, &GB::set_2) }
+            (0xCB, 0xD3) => { GB::shift_e(self, &GB::set_2) }
+            (0xCB, 0xD4) => { GB::shift_h(self, &GB::set_2) }
+            (0xCB, 0xD5) => { GB::shift_l(self, &GB::set_2) }
+            (0xCB, 0xD6) => { GB::shift_mem(self, &GB::set_2) }
+            (0xCB, 0xD7) => { GB::shift_a(self, &GB::set_2) }
+            // SET 3
+            (0xCB, 0xD8) => { GB::shift_b(self, &GB::set_3) }
+            (0xCB, 0xD9) => { GB::shift_c(self, &GB::set_3) }
+            (0xCB, 0xDA) => { GB::shift_d(self, &GB::set_3) }
+            (0xCB, 0xDB) => { GB::shift_e(self, &GB::set_3) }
+            (0xCB, 0xDC) => { GB::shift_h(self, &GB::set_3) }
+            (0xCB, 0xDD) => { GB::shift_l(self, &GB::set_3) }
+            (0xCB, 0xDE) => { GB::shift_mem(self, &GB::set_3) }
+            (0xCB, 0xDF) => { GB::shift_a(self, &GB::set_3) }
+            // SET 4
+            (0xCB, 0xE0) => { GB::shift_b(self, &GB::set_4) }
+            (0xCB, 0xE1) => { GB::shift_c(self, &GB::set_4) }
+            (0xCB, 0xE2) => { GB::shift_d(self, &GB::set_4) }
+            (0xCB, 0xE3) => { GB::shift_e(self, &GB::set_4) }
+            (0xCB, 0xE4) => { GB::shift_h(self, &GB::set_4) }
+            (0xCB, 0xE5) => { GB::shift_l(self, &GB::set_4) }
+            (0xCB, 0xE6) => { GB::shift_mem(self, &GB::set_4) }
+            (0xCB, 0xE7) => { GB::shift_a(self, &GB::set_4) }
+            // SET 5
+            (0xCB, 0xE8) => { GB::shift_b(self, &GB::set_5) }
+            (0xCB, 0xE9) => { GB::shift_c(self, &GB::set_5) }
+            (0xCB, 0xEA) => { GB::shift_d(self, &GB::set_5) }
+            (0xCB, 0xEB) => { GB::shift_e(self, &GB::set_5) }
+            (0xCB, 0xEC) => { GB::shift_h(self, &GB::set_5) }
+            (0xCB, 0xED) => { GB::shift_l(self, &GB::set_5) }
+            (0xCB, 0xEE) => { GB::shift_mem(self, &GB::set_5) }
+            (0xCB, 0xEF) => { GB::shift_a(self, &GB::set_5) }
+            // SET 6
+            (0xCB, 0xF0) => { GB::shift_b(self, &GB::set_6) }
+            (0xCB, 0xF1) => { GB::shift_c(self, &GB::set_6) }
+            (0xCB, 0xF2) => { GB::shift_d(self, &GB::set_6) }
+            (0xCB, 0xF3) => { GB::shift_e(self, &GB::set_6) }
+            (0xCB, 0xF4) => { GB::shift_h(self, &GB::set_6) }
+            (0xCB, 0xF5) => { GB::shift_l(self, &GB::set_6) }
+            (0xCB, 0xF6) => { GB::shift_mem(self, &GB::set_6) }
+            (0xCB, 0xF7) => { GB::shift_a(self, &GB::set_6) }
+            // SET 7
+            (0xCB, 0xF8) => { GB::shift_b(self, &GB::set_7) }
+            (0xCB, 0xF9) => { GB::shift_c(self, &GB::set_7) }
+            (0xCB, 0xFA) => { GB::shift_d(self, &GB::set_7) }
+            (0xCB, 0xFB) => { GB::shift_e(self, &GB::set_7) }
+            (0xCB, 0xFC) => { GB::shift_h(self, &GB::set_7) }
+            (0xCB, 0xFD) => { GB::shift_l(self, &GB::set_7) }
+            (0xCB, 0xFE) => { GB::shift_mem(self, &GB::set_7) }
+            (0xCB, 0xFF) => { GB::shift_a(self, &GB::set_7) }
             (_, _)  => { panic!("Unknown opcode") }
         }
     }
