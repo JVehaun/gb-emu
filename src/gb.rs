@@ -74,21 +74,19 @@ impl CPU {
 
     pub fn set_z(&mut self, val: u8) {
         if val == 1 {self.af = self.af | (val as u16) << 7;}
-        else {self.af = self.af & !((val as u16) << 7)}
+        else {self.af = self.af & !(1 << 7)}
     }
     pub fn set_n(&mut self, val: u8) {
         if val == 1 {self.af = self.af | (val as u16) << 6;}
-        else {self.af = self.af & !((val as u16) << 6)}
+        else {self.af = self.af & !(1 << 6)}
     }
     pub fn set_hc(&mut self, val: u8) {
         if val == 1 { self.af = self.af | (val as u16) << 5; }
-        else { self.af = self.af & !((val as u16) << 5) }
+        else { self.af = self.af & !(1 << 5) }
     }
     pub fn set_cy(&mut self, val: u8) {
         if val == 1 {self.af = self.af | (1 << 4);}
-        else {
-            self.af = self.af & !(1 << 4);
-        }
+        else {self.af = self.af & !(1 << 4);}
     }
 }
 
@@ -278,6 +276,78 @@ impl GB {
             (0xCB, 0x3D) => { GB::shift_l(self, &GB::srl) }
             (0xCB, 0x3E) => { GB::shift_mem(self, &GB::srl) }
             (0xCB, 0x3F) => { GB::shift_a(self, &GB::srl) }
+            // BIT 0
+            (0xCB, 0x40) => { GB::shift_b(self, &GB::bit_0) }
+            (0xCB, 0x41) => { GB::shift_c(self, &GB::bit_0) }
+            (0xCB, 0x42) => { GB::shift_d(self, &GB::bit_0) }
+            (0xCB, 0x43) => { GB::shift_e(self, &GB::bit_0) }
+            (0xCB, 0x44) => { GB::shift_h(self, &GB::bit_0) }
+            (0xCB, 0x45) => { GB::shift_l(self, &GB::bit_0) }
+            (0xCB, 0x46) => { GB::shift_mem(self, &GB::bit_0) }
+            (0xCB, 0x47) => { GB::shift_a(self, &GB::bit_0) }
+            // BIT 1
+            (0xCB, 0x48) => { GB::shift_b(self, &GB::bit_1) }
+            (0xCB, 0x49) => { GB::shift_c(self, &GB::bit_1) }
+            (0xCB, 0x4A) => { GB::shift_d(self, &GB::bit_1) }
+            (0xCB, 0x4B) => { GB::shift_e(self, &GB::bit_1) }
+            (0xCB, 0x4C) => { GB::shift_h(self, &GB::bit_1) }
+            (0xCB, 0x4D) => { GB::shift_l(self, &GB::bit_1) }
+            (0xCB, 0x4E) => { GB::shift_mem(self, &GB::bit_1) }
+            (0xCB, 0x4F) => { GB::shift_a(self, &GB::bit_1) }
+            // BIT 2
+            (0xCB, 0x50) => { GB::shift_b(self, &GB::bit_2) }
+            (0xCB, 0x51) => { GB::shift_c(self, &GB::bit_2) }
+            (0xCB, 0x52) => { GB::shift_d(self, &GB::bit_2) }
+            (0xCB, 0x53) => { GB::shift_e(self, &GB::bit_2) }
+            (0xCB, 0x54) => { GB::shift_h(self, &GB::bit_2) }
+            (0xCB, 0x55) => { GB::shift_l(self, &GB::bit_2) }
+            (0xCB, 0x56) => { GB::shift_mem(self, &GB::bit_2) }
+            (0xCB, 0x57) => { GB::shift_a(self, &GB::bit_2) }
+            // BIT 3
+            (0xCB, 0x58) => { GB::shift_b(self, &GB::bit_3) }
+            (0xCB, 0x59) => { GB::shift_c(self, &GB::bit_3) }
+            (0xCB, 0x5A) => { GB::shift_d(self, &GB::bit_3) }
+            (0xCB, 0x5B) => { GB::shift_e(self, &GB::bit_3) }
+            (0xCB, 0x5C) => { GB::shift_h(self, &GB::bit_3) }
+            (0xCB, 0x5D) => { GB::shift_l(self, &GB::bit_3) }
+            (0xCB, 0x5E) => { GB::shift_mem(self, &GB::bit_3) }
+            (0xCB, 0x5F) => { GB::shift_a(self, &GB::bit_3) }
+            // BIT 4
+            (0xCB, 0x60) => { GB::shift_b(self, &GB::bit_4) }
+            (0xCB, 0x61) => { GB::shift_c(self, &GB::bit_4) }
+            (0xCB, 0x62) => { GB::shift_d(self, &GB::bit_4) }
+            (0xCB, 0x63) => { GB::shift_e(self, &GB::bit_4) }
+            (0xCB, 0x64) => { GB::shift_h(self, &GB::bit_4) }
+            (0xCB, 0x65) => { GB::shift_l(self, &GB::bit_4) }
+            (0xCB, 0x66) => { GB::shift_mem(self, &GB::bit_4) }
+            (0xCB, 0x67) => { GB::shift_a(self, &GB::bit_4) }
+            // BIT 5
+            (0xCB, 0x68) => { GB::shift_b(self, &GB::bit_5) }
+            (0xCB, 0x69) => { GB::shift_c(self, &GB::bit_5) }
+            (0xCB, 0x6A) => { GB::shift_d(self, &GB::bit_5) }
+            (0xCB, 0x6B) => { GB::shift_e(self, &GB::bit_5) }
+            (0xCB, 0x6C) => { GB::shift_h(self, &GB::bit_5) }
+            (0xCB, 0x6D) => { GB::shift_l(self, &GB::bit_5) }
+            (0xCB, 0x6E) => { GB::shift_mem(self, &GB::bit_5) }
+            (0xCB, 0x6F) => { GB::shift_a(self, &GB::bit_5) }
+            // BIT 6
+            (0xCB, 0x70) => { GB::shift_b(self, &GB::bit_6) }
+            (0xCB, 0x71) => { GB::shift_c(self, &GB::bit_6) }
+            (0xCB, 0x72) => { GB::shift_d(self, &GB::bit_6) }
+            (0xCB, 0x73) => { GB::shift_e(self, &GB::bit_6) }
+            (0xCB, 0x74) => { GB::shift_h(self, &GB::bit_6) }
+            (0xCB, 0x75) => { GB::shift_l(self, &GB::bit_6) }
+            (0xCB, 0x76) => { GB::shift_mem(self, &GB::bit_6) }
+            (0xCB, 0x77) => { GB::shift_a(self, &GB::bit_6) }
+            // BIT 7
+            (0xCB, 0x78) => { GB::shift_b(self, &GB::bit_7) }
+            (0xCB, 0x79) => { GB::shift_c(self, &GB::bit_7) }
+            (0xCB, 0x7A) => { GB::shift_d(self, &GB::bit_7) }
+            (0xCB, 0x7B) => { GB::shift_e(self, &GB::bit_7) }
+            (0xCB, 0x7C) => { GB::shift_h(self, &GB::bit_7) }
+            (0xCB, 0x7D) => { GB::shift_l(self, &GB::bit_7) }
+            (0xCB, 0x7E) => { GB::shift_mem(self, &GB::bit_7) }
+            (0xCB, 0x7F) => { GB::shift_a(self, &GB::bit_7) }
             (_, _)  => { panic!("Unknown opcode") }
         }
     }
@@ -403,6 +473,23 @@ impl GB {
         if r == 0 {
             self.cpu.set_z(1);
         }
+        return r;
+    }
+
+
+    //BIT testing functions
+    fn bit_0(&mut self, mut r: u8) -> u8 { return self.bit(r, 0); }
+    fn bit_1(&mut self, mut r: u8) -> u8 { return self.bit(r, 1); }
+    fn bit_2(&mut self, mut r: u8) -> u8 { return self.bit(r, 2); }
+    fn bit_3(&mut self, mut r: u8) -> u8 { return self.bit(r, 3); }
+    fn bit_4(&mut self, mut r: u8) -> u8 { return self.bit(r, 4); }
+    fn bit_5(&mut self, mut r: u8) -> u8 { return self.bit(r, 5); }
+    fn bit_6(&mut self, mut r: u8) -> u8 { return self.bit(r, 6); }
+    fn bit_7(&mut self, mut r: u8) -> u8 { return self.bit(r, 7); }
+
+    fn bit(&mut self, mut r: u8, i: u8) -> u8 {
+        println!("{:b} >> {} {:b}", r, i, (r >> i) & 1 );
+        self.cpu.set_z((r >> i) & 1);
         return r;
     }
 }
@@ -674,7 +761,6 @@ fn swap_b() {
     GB::shift_b(&mut gb, &GB::swap);
     assert_eq!(gb.cpu.get_b(), 0b01001011);
 }
-// SWAP Tests
 #[test]
 fn swap_hl() {
     let mut gb = GB::new();
@@ -726,4 +812,87 @@ fn srl_hl_negative() {
     GB::shift_mem(&mut gb, &GB::srl);
     assert_eq!(gb.mem_read(addr), 0b01100110);
     assert_eq!(gb.cpu.get_cy(), 1);
+}
+
+
+// BIT Tests
+#[test]
+fn bit_0_b_on() {
+    let mut gb = GB::new();
+    gb.cpu.set_b(0b00000001);
+    gb.cpu.set_z(0);
+    GB::shift_b(&mut gb, &GB::bit_0);
+    assert_eq!(gb.cpu.get_b(), 0b00000001);
+    assert_eq!(gb.cpu.get_z(), 1);
+}
+#[test]
+fn bit_0_b_off() {
+    let mut gb = GB::new();
+    gb.cpu.set_b(0b11111110);
+    gb.cpu.set_z(1);
+    GB::shift_b(&mut gb, &GB::bit_0);
+    assert_eq!(gb.cpu.get_b(), 0b11111110);
+    assert_eq!(gb.cpu.get_z(), 0);
+}
+#[test]
+fn bit_0_hl_on() {
+    let mut gb = GB::new();
+    let addr = 0xC000;
+    gb.cpu.set_hl(addr);
+    gb.mem_write(addr, 0b00000001);
+    gb.cpu.set_z(0);
+    GB::shift_mem(&mut gb, &GB::bit_0);
+    assert_eq!(gb.mem_read(addr), 0b00000001);
+    assert_eq!(gb.cpu.get_z(), 1);
+}
+#[test]
+fn bit_0_hl_off() {
+    let mut gb = GB::new();
+    let addr = 0xC000;
+    gb.cpu.set_hl(addr);
+    gb.mem_write(addr, 0b11111110);
+    gb.cpu.set_z(1);
+    GB::shift_mem(&mut gb, &GB::bit_0);
+    assert_eq!(gb.mem_read(addr), 0b11111110);
+    assert_eq!(gb.cpu.get_z(), 0);
+}
+#[test]
+fn bit_6_b_on() {
+    let mut gb = GB::new();
+    gb.cpu.set_b(0b01000000);
+    gb.cpu.set_z(0);
+    GB::shift_b(&mut gb, &GB::bit_6);
+    assert_eq!(gb.cpu.get_b(), 0b01000000);
+    assert_eq!(gb.cpu.get_z(), 1);
+}
+#[test]
+fn bit_6_b_off() {
+    let mut gb = GB::new();
+    gb.cpu.set_b(0b10111111);
+    gb.cpu.set_z(1);
+    GB::shift_b(&mut gb, &GB::bit_6);
+    assert_eq!(gb.cpu.get_b(), 0b10111111);
+    assert_eq!(gb.cpu.get_z(), 0);
+}
+#[test]
+fn bit_6_hl_on() {
+    let mut gb = GB::new();
+    let addr = 0xC000;
+    gb.cpu.set_hl(addr);
+    gb.mem_write(addr, 0b01000000);
+    gb.cpu.set_z(0);
+    GB::shift_mem(&mut gb, &GB::bit_6);
+    assert_eq!(gb.mem_read(addr), 0b01000000);
+    assert_eq!(gb.cpu.get_z(), 1);
+}
+#[test]
+fn bit_6_hl_off() {
+    let mut gb = GB::new();
+    let addr = 0xC000;
+    gb.cpu.set_hl(addr);
+    gb.mem_write(addr, 0b10111111);
+    gb.cpu.set_z(1);
+    GB::shift_mem(&mut gb, &GB::bit_6);
+    assert_eq!(gb.mem_read(addr), 0b10111111);
+    assert_eq!(gb.cpu.get_z(), 0);
 }
