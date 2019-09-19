@@ -492,6 +492,9 @@ impl GB {
             (0xCB, 0xFD) => { GB::shift_l(self, &GB::set_7) }
             (0xCB, 0xFE) => { GB::shift_mem(self, &GB::set_7) }
             (0xCB, 0xFF) => { GB::shift_a(self, &GB::set_7) }
+
+            // NOP
+            (0x00, _) => { return 4; }
             (_, _)  => { panic!("Unknown opcode") }
         }
     }
