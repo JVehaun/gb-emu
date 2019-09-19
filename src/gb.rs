@@ -501,11 +501,83 @@ impl GB {
             (0x11, _) => { self.ld_de_d16() }
             (0x21, _) => { self.ld_hl_d16() }
             (0x31, _) => { self.ld_sp_d16() }
-            // LD (r16), d16
+            // LD (r16), A
             (0x02, _) => { self.ld_bc_mem() }
             (0x12, _) => { self.ld_de_mem() }
             (0x22, _) => { self.ld_hl_mem_inc() }
             (0x32, _) => { self.ld_hl_mem_dec() }
+            // LD B, r8
+            (0x40, _) => { self.ld_r8_r8(&CPU::set_b, &CPU::get_b) }
+            (0x41, _) => { self.ld_r8_r8(&CPU::set_b, &CPU::get_c) }
+            (0x42, _) => { self.ld_r8_r8(&CPU::set_b, &CPU::get_c) }
+            (0x43, _) => { self.ld_r8_r8(&CPU::set_b, &CPU::get_e) }
+            (0x44, _) => { self.ld_r8_r8(&CPU::set_b, &CPU::get_h) }
+            (0x45, _) => { self.ld_r8_r8(&CPU::set_b, &CPU::get_l) }
+            (0x46, _) => { panic!("Not implemented yet!")}
+            (0x47, _) => { self.ld_r8_r8(&CPU::set_b, &CPU::get_a) }
+            // LD C, r8
+            (0x48, _) => { self.ld_r8_r8(&CPU::set_c, &CPU::get_b) }
+            (0x49, _) => { self.ld_r8_r8(&CPU::set_c, &CPU::get_c) }
+            (0x4A, _) => { self.ld_r8_r8(&CPU::set_c, &CPU::get_c) }
+            (0x4B, _) => { self.ld_r8_r8(&CPU::set_c, &CPU::get_e) }
+            (0x4C, _) => { self.ld_r8_r8(&CPU::set_c, &CPU::get_h) }
+            (0x4D, _) => { self.ld_r8_r8(&CPU::set_c, &CPU::get_l) }
+            (0x4E, _) => { panic!("Not implemented yet!")}
+            (0x4F, _) => { self.ld_r8_r8(&CPU::set_c, &CPU::get_a) }
+            // LD D, r8
+            (0x50, _) => { self.ld_r8_r8(&CPU::set_d, &CPU::get_b) }
+            (0x51, _) => { self.ld_r8_r8(&CPU::set_d, &CPU::get_c) }
+            (0x52, _) => { self.ld_r8_r8(&CPU::set_d, &CPU::get_c) }
+            (0x53, _) => { self.ld_r8_r8(&CPU::set_d, &CPU::get_e) }
+            (0x54, _) => { self.ld_r8_r8(&CPU::set_d, &CPU::get_h) }
+            (0x55, _) => { self.ld_r8_r8(&CPU::set_d, &CPU::get_l) }
+            (0x56, _) => { panic!("Not implemented yet!")}
+            (0x57, _) => { self.ld_r8_r8(&CPU::set_d, &CPU::get_a) }
+            // LD E, r8
+            (0x58, _) => { self.ld_r8_r8(&CPU::set_e, &CPU::get_b) }
+            (0x59, _) => { self.ld_r8_r8(&CPU::set_e, &CPU::get_c) }
+            (0x5A, _) => { self.ld_r8_r8(&CPU::set_e, &CPU::get_c) }
+            (0x5B, _) => { self.ld_r8_r8(&CPU::set_e, &CPU::get_e) }
+            (0x5C, _) => { self.ld_r8_r8(&CPU::set_e, &CPU::get_h) }
+            (0x5D, _) => { self.ld_r8_r8(&CPU::set_e, &CPU::get_l) }
+            (0x5E, _) => { panic!("Not implemented yet!")}
+            (0x5F, _) => { self.ld_r8_r8(&CPU::set_e, &CPU::get_a) }
+            // LD H, r8
+            (0x60, _) => { self.ld_r8_r8(&CPU::set_h, &CPU::get_b) }
+            (0x61, _) => { self.ld_r8_r8(&CPU::set_h, &CPU::get_c) }
+            (0x62, _) => { self.ld_r8_r8(&CPU::set_h, &CPU::get_c) }
+            (0x63, _) => { self.ld_r8_r8(&CPU::set_h, &CPU::get_e) }
+            (0x64, _) => { self.ld_r8_r8(&CPU::set_h, &CPU::get_h) }
+            (0x65, _) => { self.ld_r8_r8(&CPU::set_h, &CPU::get_l) }
+            (0x66, _) => { panic!("Not implemented yet!")}
+            (0x67, _) => { self.ld_r8_r8(&CPU::set_h, &CPU::get_a) }
+            // LD L, r8
+            (0x68, _) => { self.ld_r8_r8(&CPU::set_l, &CPU::get_b) }
+            (0x69, _) => { self.ld_r8_r8(&CPU::set_l, &CPU::get_c) }
+            (0x6A, _) => { self.ld_r8_r8(&CPU::set_l, &CPU::get_c) }
+            (0x6B, _) => { self.ld_r8_r8(&CPU::set_l, &CPU::get_e) }
+            (0x6C, _) => { self.ld_r8_r8(&CPU::set_l, &CPU::get_h) }
+            (0x6D, _) => { self.ld_r8_r8(&CPU::set_l, &CPU::get_l) }
+            (0x6E, _) => { panic!("Not implemented yet!")}
+            (0x6F, _) => { self.ld_r8_r8(&CPU::set_l, &CPU::get_a) }
+            // LD (HL), r8
+            (0x70, _) => { panic!("Not implemented yet!")}
+            (0x71, _) => { panic!("Not implemented yet!")}
+            (0x72, _) => { panic!("Not implemented yet!")}
+            (0x73, _) => { panic!("Not implemented yet!")}
+            (0x74, _) => { panic!("Not implemented yet!")}
+            (0x75, _) => { panic!("Not implemented yet!")}
+            (0x76, _) => { panic!("Not implemented yet!")}
+            (0x77, _) => { panic!("Not implemented yet!")}
+            // LD A, r8
+            (0x78, _) => { self.ld_r8_r8(&CPU::set_a, &CPU::get_b) }
+            (0x79, _) => { self.ld_r8_r8(&CPU::set_a, &CPU::get_c) }
+            (0x7A, _) => { self.ld_r8_r8(&CPU::set_a, &CPU::get_c) }
+            (0x7B, _) => { self.ld_r8_r8(&CPU::set_a, &CPU::get_e) }
+            (0x7C, _) => { self.ld_r8_r8(&CPU::set_a, &CPU::get_h) }
+            (0x7D, _) => { self.ld_r8_r8(&CPU::set_a, &CPU::get_l) }
+            (0x7E, _) => { panic!("Not implemented yet!")}
+            (0x7F, _) => { self.ld_r8_r8(&CPU::set_a, &CPU::get_a) }
             (_, _)  => { panic!("Unknown opcode") }
         }
     }
@@ -718,6 +790,11 @@ impl GB {
         self.mem_write(hl, a);
         self.cpu.hl -= 1;
         return 8;
+    }
+    fn ld_r8_r8(&mut self, setter: &Fn(&mut CPU, u8), getter: &Fn(&mut CPU) -> u8) -> u32 {
+        let val = getter(&mut self.cpu);
+        setter(&mut self.cpu, val);
+        return 4;
     }
 }
 
@@ -1273,4 +1350,15 @@ fn ld_hl_mem_dec_test() {
     gb.ld_hl_mem_dec();
     assert_eq!(gb.cpu.hl, 0xBFFF);
     assert_eq!(gb.mem_read(gb.cpu.hl+1), 0xAF);
+}
+#[test]
+fn ld_b_c_test() {
+    let mut gb = GB::new();
+    gb.cpu.set_b(0xAF);
+    gb.cpu.set_c(0xDE);
+    gb.cpu.set_a(0xAF);
+    gb.ld_r8_r8(&CPU::set_b, &CPU::get_c);
+    gb.mem_write(gb.cpu.bc, 0x00);
+    gb.ld_bc_mem();
+    assert_eq!(gb.mem_read(gb.cpu.bc), 0xAF);
 }
