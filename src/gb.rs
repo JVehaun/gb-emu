@@ -495,6 +495,17 @@ impl GB {
 
             // NOP
             (0x00, _) => { return 4; }
+
+            // LD r16, d16
+            // (0x01, val) => { self.ld_bc_d16(val as u8) }
+            (0x11, val) => { panic!("Not implemented") }
+            (0x21, val) => { panic!("Not implemented") }
+            (0x31, val) => { panic!("Not implemented") }
+            // LD (r16), d16
+            (0x02, val) => { panic!("Not implemented") }
+            (0x12, val) => { panic!("Not implemented") }
+            (0x22, val) => { panic!("Not implemented") }
+            (0x32, val) => { panic!("Not implemented") }
             (_, _)  => { panic!("Unknown opcode") }
         }
     }
@@ -658,6 +669,29 @@ impl GB {
     fn set_7(&mut self, mut r: u8) -> u8 { return self.set(r, 7); }
     fn set(&mut self, mut r: u8, i: u8) -> u8 {
         return (r | (1 << i));
+    }
+
+
+    //LD ops
+    fn ld_bc_d16(&mut self) -> u32 {
+        let d16 = ((self.mem_read(self.cpu.pc + 1) as u16) << 8) | (self.mem_read(self.cpu.pc + 2) as u16);
+        self.cpu.bc = d16;
+        return 12;
+    }
+    fn ld_de_d16(&mut self) -> u32 {
+        let d16 = ((self.mem_read(self.cpu.pc + 1) as u16) << 8) | (self.mem_read(self.cpu.pc + 2) as u16);
+        self.cpu.de = d16;
+        return 12;
+    }
+    fn ld_hl_d16(&mut self) -> u32 {
+        let d16 = ((self.mem_read(self.cpu.pc + 1) as u16) << 8) | (self.mem_read(self.cpu.pc + 2) as u16);
+        self.cpu.hl = d16;
+        return 12;
+    }
+    fn ld_sp_d16(&mut self) -> u32 {
+        let d16 = ((self.mem_read(self.cpu.pc + 1) as u16) << 8) | (self.mem_read(self.cpu.pc + 2) as u16);
+        self.cpu.sp = d16;
+        return 12;
     }
 }
 
@@ -1132,4 +1166,47 @@ fn set_6_hl() {
     gb.mem_write(addr, 0b00000000);
     GB::shift_mem(&mut gb, &GB::set_6);
     assert_eq!(gb.mem_read(addr), 0b01000000);
+}
+
+
+// LD Tests
+#[test]
+fn ld_bc_test() {
+    let mut gb = GB::new();
+    let pc = gb.cpu.pc;
+    gb.mem_write(pc+1, 0xDE);
+    gb.mem_write(pc+2, 0xAD);
+    gb.cpu.bc = 0x0000;
+    gb.ld_bc_d16();
+    assert_eq!(gb.cpu.bc, 0xDEAD);
+}
+#[test]
+fn ld_de_test() {
+    let mut gb = GB::new();
+    let pc = gb.cpu.pc;
+    gb.mem_write(pc+1, 0xDE);
+    gb.mem_write(pc+2, 0xAD);
+    gb.cpu.de = 0x0000;
+    gb.ld_de_d16();
+    assert_eq!(gb.cpu.de, 0xDEAD);
+}
+#[test]
+fn ld_hl_test() {
+    let mut gb = GB::new();
+    let pc = gb.cpu.pc;
+    gb.mem_write(pc+1, 0xDE);
+    gb.mem_write(pc+2, 0xAD);
+    gb.cpu.hl = 0x0000;
+    gb.ld_hl_d16();
+    assert_eq!(gb.cpu.hl, 0xDEAD);
+}
+#[test]
+fn ld_sp_test() {
+    let mut gb = GB::new();
+    let pc = gb.cpu.pc;
+    gb.mem_write(pc+1, 0xDE);
+    gb.mem_write(pc+2, 0xAD);
+    gb.cpu.sp = 0x0000;
+    gb.ld_sp_d16();
+    assert_eq!(gb.cpu.sp, 0xDEAD);
 }
