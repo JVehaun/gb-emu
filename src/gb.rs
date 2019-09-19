@@ -260,6 +260,15 @@ impl GB {
             (0xCB, 0x2D) => { GB::shift_l(self, &GB::sra) }
             (0xCB, 0x2E) => { GB::shift_mem(self, &GB::sra) }
             (0xCB, 0x2F) => { GB::shift_a(self, &GB::sra) }
+            // SWAP
+            (0xCB, 0x30) => { GB::shift_b(self, &GB::swap) }
+            (0xCB, 0x31) => { GB::shift_c(self, &GB::swap) }
+            (0xCB, 0x32) => { GB::shift_d(self, &GB::swap) }
+            (0xCB, 0x33) => { GB::shift_e(self, &GB::swap) }
+            (0xCB, 0x34) => { GB::shift_h(self, &GB::swap) }
+            (0xCB, 0x35) => { GB::shift_l(self, &GB::swap) }
+            (0xCB, 0x36) => { GB::shift_mem(self, &GB::swap) }
+            (0xCB, 0x37) => { GB::shift_a(self, &GB::swap) }
             // SRL
             (0xCB, 0x38) => { GB::shift_b(self, &GB::srl) }
             (0xCB, 0x39) => { GB::shift_c(self, &GB::srl) }
@@ -374,6 +383,14 @@ impl GB {
         self.cpu.set_cy(cy);
         let sign = r >> 7;
         r = (r >> 1) | (sign << 7);
+        if r == 0 {
+            self.cpu.set_z(1);
+        }
+        return r;
+    }
+    fn swap(&mut self, mut r: u8) -> u8 {
+        let sign = r >> 7;
+        r = (r >> 4) | (r << 4);
         if r == 0 {
             self.cpu.set_z(1);
         }
@@ -646,6 +663,26 @@ fn sra_hl_negative() {
     GB::shift_mem(&mut gb, &GB::sra);
     assert_eq!(gb.mem_read(addr), 0b11100110);
     assert_eq!(gb.cpu.get_cy(), 1);
+}
+
+
+// SWAP Tests
+#[test]
+fn swap_b() {
+    let mut gb = GB::new();
+    gb.cpu.set_b(0b10110100);
+    GB::shift_b(&mut gb, &GB::swap);
+    assert_eq!(gb.cpu.get_b(), 0b01001011);
+}
+// SWAP Tests
+#[test]
+fn swap_hl() {
+    let mut gb = GB::new();
+    let addr = 0xC000;
+    gb.cpu.set_hl(addr);
+    gb.mem_write(addr, 0b10110100);
+    GB::shift_mem(&mut gb, &GB::swap);
+    assert_eq!(gb.mem_read(addr), 0b01001011);
 }
 
 
