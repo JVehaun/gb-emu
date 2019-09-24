@@ -816,6 +816,11 @@ impl GB {
         self.mem_write(dest_addr, val);
         return 8;
     }
+    fn ld_mem_a16_r16(&mut self, dest_addr: u16, val: u16) -> u32 {
+        self.mem_write(dest_addr, (val & 0xFF) as u8);
+        self.mem_write(dest_addr+1, ((val >> 8) & 0xFF) as u8);
+        return 8;
+    }
 }
 
 
@@ -1411,4 +1416,14 @@ fn ld_mem_hl_d8_test() {
     gb.mem_write(gb.hl, 0x00);
     gb.ld_mem_r16_d8(gb.hl, 0xAF);
     assert_eq!(gb.mem_read(gb.hl), 0xAF);
+}
+#[test]
+fn ld_mem_a16_sp_test() {
+    let mut gb = GB::new();
+    gb.mem_write(0xC000, 0x00);
+    gb.mem_write(0xC000, 0x00);
+    gb.sp = 0xDEAD;
+    gb.ld_mem_a16_r16(0xC000, gb.sp);
+    assert_eq!(gb.mem_read(0xC000), 0xAD);
+    assert_eq!(gb.mem_read(0xC001), 0xDE);
 }
