@@ -492,8 +492,8 @@ impl GB {
             (0x21, _) => { self.ld_hl_d16() }
             (0x31, _) => { self.ld_sp_d16() }
             // LD (r16), A
-            (0x02, _) => { self.ld_bc_mem() }
-            (0x12, _) => { self.ld_de_mem() }
+            (0x02, _) => { self.ld_r16_mem(self.bc) }
+            (0x12, _) => { self.ld_r16_mem(self.de) }
             (0x22, _) => { self.ld_hl_mem_inc() }
             (0x32, _) => { self.ld_hl_mem_dec() }
             // LD B, r8
@@ -767,16 +767,9 @@ impl GB {
         self.sp = d16;
         return 12;
     }
-    fn ld_bc_mem(&mut self) -> u32 {
-        let bc = self.bc;
+    fn ld_r16_mem(&mut self, addr: u16) -> u32 {
         let a = self.get_a();
-        self.mem_write(bc, a);
-        return 8;
-    }
-    fn ld_de_mem(&mut self) -> u32 {
-        let de = self.de;
-        let a = self.get_a();
-        self.mem_write(de, a);
+        self.mem_write(addr, a);
         return 8;
     }
     fn ld_hl_mem_inc(&mut self) -> u32 {
@@ -1344,7 +1337,7 @@ fn ld_bc_mem_test() {
     gb.bc = 0xC000;
     gb.set_a(0xAF);
     gb.mem_write(gb.bc, 0x00);
-    gb.ld_bc_mem();
+    gb.ld_r16_mem(gb.bc);
     assert_eq!(gb.mem_read(gb.bc), 0xAF);
 }
 #[test]
@@ -1353,7 +1346,7 @@ fn ld_de_mem_test() {
     gb.de = 0xC000;
     gb.set_a(0xAF);
     gb.mem_write(gb.de, 0x00);
-    gb.ld_de_mem();
+    gb.ld_r16_mem(gb.de);
     assert_eq!(gb.mem_read(gb.de), 0xAF);
 }
 #[test]
@@ -1381,11 +1374,8 @@ fn ld_b_c_test() {
     let mut gb = GB::new();
     gb.set_b(0xAF);
     gb.set_c(0xDE);
-    gb.set_a(0xAF);
     gb.ld_r8_r8(&GB::set_b, &GB::get_c);
-    gb.mem_write(gb.bc, 0x00);
-    gb.ld_bc_mem();
-    assert_eq!(gb.mem_read(gb.bc), 0xAF);
+    assert_eq!(gb.get_b(), 0xDE);
 }
 #[test]
 fn ld_mem_hl_b_test() {
