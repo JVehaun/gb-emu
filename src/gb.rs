@@ -189,6 +189,7 @@ impl GB {
 }
 
 impl GB {
+
     pub fn emulate_cycle(&mut self) -> u32 {
         let mut pc_inc: u16 = 0;
         let opcode = (self.mem_read(self.pc), self.mem_read(self.pc+1));
@@ -502,7 +503,7 @@ impl GB {
             (0x43, _) => { self.ld_r8_r8(&GB::set_b, &GB::get_e) }
             (0x44, _) => { self.ld_r8_r8(&GB::set_b, &GB::get_h) }
             (0x45, _) => { self.ld_r8_r8(&GB::set_b, &GB::get_l) }
-            (0x46, _) => { panic!("Not implemented yet!")}
+            (0x46, _) => { self.ld_r8_mem_r16(&GB::set_b, gb.hl) }
             (0x47, _) => { self.ld_r8_r8(&GB::set_b, &GB::get_a) }
             // LD C, r8
             (0x48, _) => { self.ld_r8_r8(&GB::set_c, &GB::get_b) }
@@ -511,7 +512,7 @@ impl GB {
             (0x4B, _) => { self.ld_r8_r8(&GB::set_c, &GB::get_e) }
             (0x4C, _) => { self.ld_r8_r8(&GB::set_c, &GB::get_h) }
             (0x4D, _) => { self.ld_r8_r8(&GB::set_c, &GB::get_l) }
-            (0x4E, _) => { panic!("Not implemented yet!")}
+            (0x4E, _) => { self.ld_r8_mem_r16(&GB::set_c, gb.hl) }
             (0x4F, _) => { self.ld_r8_r8(&GB::set_c, &GB::get_a) }
             // LD D, r8
             (0x50, _) => { self.ld_r8_r8(&GB::set_d, &GB::get_b) }
@@ -520,7 +521,7 @@ impl GB {
             (0x53, _) => { self.ld_r8_r8(&GB::set_d, &GB::get_e) }
             (0x54, _) => { self.ld_r8_r8(&GB::set_d, &GB::get_h) }
             (0x55, _) => { self.ld_r8_r8(&GB::set_d, &GB::get_l) }
-            (0x56, _) => { panic!("Not implemented yet!")}
+            (0x56, _) => { self.ld_r8_mem_r16(&GB::set_d, gb.hl) }
             (0x57, _) => { self.ld_r8_r8(&GB::set_d, &GB::get_a) }
             // LD E, r8
             (0x58, _) => { self.ld_r8_r8(&GB::set_e, &GB::get_b) }
@@ -529,7 +530,7 @@ impl GB {
             (0x5B, _) => { self.ld_r8_r8(&GB::set_e, &GB::get_e) }
             (0x5C, _) => { self.ld_r8_r8(&GB::set_e, &GB::get_h) }
             (0x5D, _) => { self.ld_r8_r8(&GB::set_e, &GB::get_l) }
-            (0x5E, _) => { panic!("Not implemented yet!")}
+            (0x5E, _) => { self.ld_r8_mem_r16(&GB::set_e, gb.hl) }
             (0x5F, _) => { self.ld_r8_r8(&GB::set_e, &GB::get_a) }
             // LD H, r8
             (0x60, _) => { self.ld_r8_r8(&GB::set_h, &GB::get_b) }
@@ -538,7 +539,7 @@ impl GB {
             (0x63, _) => { self.ld_r8_r8(&GB::set_h, &GB::get_e) }
             (0x64, _) => { self.ld_r8_r8(&GB::set_h, &GB::get_h) }
             (0x65, _) => { self.ld_r8_r8(&GB::set_h, &GB::get_l) }
-            (0x66, _) => { panic!("Not implemented yet!")}
+            (0x66, _) => { self.ld_r8_mem_r16(&GB::set_h, gb.hl) }
             (0x67, _) => { self.ld_r8_r8(&GB::set_h, &GB::get_a) }
             // LD L, r8
             (0x68, _) => { self.ld_r8_r8(&GB::set_l, &GB::get_b) }
@@ -547,17 +548,16 @@ impl GB {
             (0x6B, _) => { self.ld_r8_r8(&GB::set_l, &GB::get_e) }
             (0x6C, _) => { self.ld_r8_r8(&GB::set_l, &GB::get_h) }
             (0x6D, _) => { self.ld_r8_r8(&GB::set_l, &GB::get_l) }
-            (0x6E, _) => { panic!("Not implemented yet!")}
             (0x6F, _) => { self.ld_r8_r8(&GB::set_l, &GB::get_a) }
             // LD (HL), r8
-            (0x70, _) => { panic!("Not implemented yet!")}
-            (0x71, _) => { panic!("Not implemented yet!")}
-            (0x72, _) => { panic!("Not implemented yet!")}
-            (0x73, _) => { panic!("Not implemented yet!")}
-            (0x74, _) => { panic!("Not implemented yet!")}
-            (0x75, _) => { panic!("Not implemented yet!")}
-            (0x76, _) => { panic!("Not implemented yet!")}
-            (0x77, _) => { panic!("Not implemented yet!")}
+            (0x70, _) => { self.ld_mem_r16_r8(gb.hl, &GB::get_b) }
+            (0x71, _) => { self.ld_mem_r16_r8(gb.hl, &GB::get_c) }
+            (0x72, _) => { self.ld_mem_r16_r8(gb.hl, &GB::get_d) }
+            (0x73, _) => { self.ld_mem_r16_r8(gb.hl, &GB::get_e) }
+            (0x74, _) => { self.ld_mem_r16_r8(gb.hl, &GB::get_h) }
+            (0x75, _) => { self.ld_mem_r16_r8(gb.hl, &GB::get_l) }
+            (0x76, _) => { panic!("Not implemented yet!") } // HALT
+            (0x77, _) => { self.ld_mem_r16_r8(gb.hl, &GB::get_a) }
             // LD A, r8
             (0x78, _) => { self.ld_r8_r8(&GB::set_a, &GB::get_b) }
             (0x79, _) => { self.ld_r8_r8(&GB::set_a, &GB::get_c) }
@@ -565,7 +565,7 @@ impl GB {
             (0x7B, _) => { self.ld_r8_r8(&GB::set_a, &GB::get_e) }
             (0x7C, _) => { self.ld_r8_r8(&GB::set_a, &GB::get_h) }
             (0x7D, _) => { self.ld_r8_r8(&GB::set_a, &GB::get_l) }
-            (0x7E, _) => { panic!("Not implemented yet!")}
+            (0x66, _) => { self.ld_r8_mem_r16(&GB::set_a, gb.hl) }
             (0x7F, _) => { self.ld_r8_r8(&GB::set_a, &GB::get_a) }
             (_, _)  => { panic!("Unknown opcode") }
         }
@@ -784,6 +784,16 @@ impl GB {
         let val = getter(self);
         setter(self, val);
         return 4;
+    }
+    fn ld_mem_r16_r8(&mut self, dest_addr: u16, src_getter: &Fn(&mut GB) -> u8) -> u32 {
+        let val = src_getter(self);
+        self.mem_write(dest_addr, val);
+        return 8;
+    }
+    fn ld_r8_mem_r16(&mut self, dest_setter: &Fn(&mut GB, u8), src_addr: u16) -> u32 {
+        let val = self.mem_read(src_addr);
+        dest_setter(self, val);
+        return 8;
     }
 }
 
@@ -1350,4 +1360,20 @@ fn ld_b_c_test() {
     gb.mem_write(gb.bc, 0x00);
     gb.ld_bc_mem();
     assert_eq!(gb.mem_read(gb.bc), 0xAF);
+}
+#[test]
+fn ld_mem_hl_b_test() {
+    let mut gb = GB::new();
+    gb.set_b(0xAF);
+    gb.mem_write(gb.hl, 0x00);
+    gb.ld_mem_r16_r8(gb.hl, &GB::get_b);
+    assert_eq!(gb.mem_read(gb.hl), 0xAF);
+}
+#[test]
+fn ld_b_mem_hl_test() {
+    let mut gb = GB::new();
+    gb.set_b(0x00);
+    gb.mem_write(gb.hl, 0xAF);
+    gb.ld_r8_mem_r16(&GB::set_b, gb.hl);
+    assert_eq!(gb.get_b(), 0xAF);
 }
