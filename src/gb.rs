@@ -574,11 +574,16 @@ impl GB {
             (0x06, val) => { self.ld_r8_d8(&GB::set_b, val) }
             (0x16, val) => { self.ld_r8_d8(&GB::set_d, val) }
             (0x26, val) => { self.ld_r8_d8(&GB::set_h, val) }
-            // (0x36, val) => { self.ld_mem_r16_d8(gb.hl, val) }
+            (0x36, val) => { self.ld_mem_r16_d8(self.hl, val) }
             (0x0E, val) => { self.ld_r8_d8(&GB::set_c, val) }
             (0x1E, val) => { self.ld_r8_d8(&GB::set_e, val) }
             (0x2E, val) => { self.ld_r8_d8(&GB::set_l, val) }
             (0x3E, val) => { self.ld_r8_d8(&GB::set_a, val) }
+            // LD A, (r16)
+            (0x0A, _) => { self.ld_r8_mem_r16(&GB::set_a, self.bc) }
+            (0x1A, _) => { self.ld_r8_mem_r16(&GB::set_a, self.de) }
+            (0x2A, _) => { self.ld_a_mem_hl_inc() }
+            (0x3A, _) => { self.ld_a_mem_hl_dec() }
 
             (_, _)  => { panic!("Unknown opcode") }
         }
@@ -812,6 +817,18 @@ impl GB {
     fn ld_mem_a16_r16(&mut self, dest_addr: u16, val: u16) -> u32 {
         self.mem_write(dest_addr, (val & 0xFF) as u8);
         self.mem_write(dest_addr+1, ((val >> 8) & 0xFF) as u8);
+        return 8;
+    }
+    fn ld_a_mem_hl_inc(&mut self) -> u32 {
+        let val = self.mem_read(self.hl);
+        self.set_a(val);
+        self.hl += 1;
+        return 8;
+    }
+    fn ld_a_mem_hl_dec(&mut self) -> u32 {
+        let val = self.mem_read(self.hl);
+        self.set_a(val);
+        self.hl -= 1;
         return 8;
     }
 }
@@ -1416,4 +1433,32 @@ fn ld_mem_a16_sp_test() {
     gb.ld_mem_a16_r16(0xC000, gb.sp);
     assert_eq!(gb.mem_read(0xC000), 0xAD);
     assert_eq!(gb.mem_read(0xC001), 0xDE);
+}
+#[test]
+fn ld_a_mem_bc_test() {
+    let mut gb = GB::new();
+    gb.set_a(0x00);
+    gb.mem_write(gb.bc, 0xFF);
+    gb.ld_r8_mem_r16(&GB::set_a, gb.bc);
+    assert_eq!(gb.get_a(), 0xFF);
+}
+#[test]
+fn ld_a_mem_hl_inc_test() {
+    let mut gb = GB::new();
+    gb.set_a(0x00);
+    gb.hl = 0x1F;
+    gb.mem_write(gb.hl, 0xFE);
+    gb.ld_a_mem_hl_inc();
+    assert_eq!(gb.get_a(), 0xFE);
+    assert_eq!(gb.hl, 0x20);
+}
+#[test]
+fn ld_a_mem_hl_dec_test() {
+    let mut gb = GB::new();
+    gb.set_a(0x00);
+    gb.hl = 0x1F;
+    gb.mem_write(gb.hl, 0xFF);
+    gb.ld_a_mem_hl_dec();
+    assert_eq!(gb.get_a(), 0xFF);
+    assert_eq!(gb.hl, 0x1E);
 }
