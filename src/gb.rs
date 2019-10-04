@@ -585,11 +585,15 @@ impl GB {
             (0x2A, _) => { self.ld_a_mem_hl_inc() }
             (0x3A, _) => { self.ld_a_mem_hl_dec() }
             // LDH
-            (0xE0, val) => { self.ldh_mem_r8_r8(val, &GB::get_a) }
-            (0xF0, val) => { self.ldh_r8_mem_r8(&GB::set_a, val) }
+            (0xE0, val) => { self.ldh_mem_a8_r8(val, &GB::get_a) }
+            (0xF0, val) => { self.ldh_r8_mem_a8(&GB::set_a, val) }
             // LD C (Like LDH for hi mem)
             (0xE2, val) => { self.ld_mem_r8_r8(&GB::get_c, &GB::get_a) }
             (0xF2, val) => { self.ld_r8_mem_r8(&GB::set_a, &GB::get_c) }
+            // LD SP/HL
+            (0xF8, val) => { self.ld_hl_sp_plus_a8(val) }
+            (0xF9, val) => { self.ld_sp_hl() }
+
 
             (_, _)  => { panic!("Unknown opcode") }
         }
@@ -861,6 +865,35 @@ impl GB {
         src = src | 0xFF00;
         let val = self.mem_read(src);
         dest_setter(self, val);
+        return 8;
+    }
+    fn ld_hl_sp_plus_a8(&mut self, val: u8) -> u32 {
+        let (result, _) = self.sp.overflowing_add(val as u16);
+        self.hl = result;
+
+        // Calculate C
+        let (_, c) = self.sp.overflowing_add(val as u16);
+        if c {
+            self.set_c(1);
+        } else {
+            self.set_c(0);
+        }
+
+        // Calculate H
+        let (_, h) = (self.sp as u8).overflowing_add(val);
+        if h {
+            self.set_h(1);
+        } else {
+            self.set_h(0);
+        }
+
+        // Set remaining bits
+        self.set_z(0);
+        self.set_n(0);
+        return 12;
+    }
+    fn ld_sp_hl(&mut self) -> u32 {
+        self.sp = self.hl;
         return 8;
     }
 }
@@ -1527,4 +1560,21 @@ fn ld_r8_mem_r8_test() {
     gb.set_c(0x20);
     gb.ld_r8_mem_r8(&GB::set_a, &GB::get_c);
     assert_eq!(gb.get_a(), 0x11);
+}
+#[test]
+fn ld_hl_sp_plus_r8_test() {
+    let mut gb = GB::new();
+    gb.hl = 0;
+    gb.sp = 0x0010;
+    let val = 0xFF;
+    gb.ld_hl_sp_plus_a8(val);
+    assert_eq!(gb.hl, 0x10F);
+}
+#[test]
+fn ld_sp_hl_test() {
+    let mut gb = GB::new();
+    gb.sp = 0;
+    gb.hl = 0xDEAD;
+    gb.ld_sp_hl();
+    assert_eq!(gb.sp, 0xDEAD);
 }
