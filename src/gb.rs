@@ -896,6 +896,18 @@ impl GB {
         self.sp = self.hl;
         return 8;
     }
+    fn ld_mem_a16_a(&mut self) -> u32 {
+        let a16 = ((self.mem_read(self.pc + 1) as u16) << 8) | (self.mem_read(self.pc + 2) as u16);
+        let val = self.get_a();
+        self.mem_write(a16, val);
+        return 16;
+    }
+    fn ld_a_mem_a16(&mut self) -> u32 {
+        let a16 = ((self.mem_read(self.pc + 1) as u16) << 8) | (self.mem_read(self.pc + 2) as u16);
+        let val = self.mem_read(a16);
+        self.set_a(val);
+        return 16;
+    }
 }
 
 
@@ -1577,4 +1589,27 @@ fn ld_sp_hl_test() {
     gb.hl = 0xDEAD;
     gb.ld_sp_hl();
     assert_eq!(gb.sp, 0xDEAD);
+}
+#[test]
+fn ld_mem_a16_a_test() {
+    let mut gb = GB::new();
+    let addr = 0xDEAD;
+    gb.mem_write(gb.pc+1, 0xDE);
+    gb.mem_write(gb.pc+2, 0xAD);
+    let val = 0x11;
+    gb.set_a(val);
+    gb.ld_mem_a16_a();
+    assert_eq!(gb.mem_read(addr), val);
+}
+#[test]
+fn ld_a_mem_a16_test() {
+    let mut gb = GB::new();
+    let addr = 0xDEAD;
+    gb.mem_write(gb.pc+1, 0xDE);
+    gb.mem_write(gb.pc+2, 0xAD);
+    let val = 0x11;
+    gb.set_a(0x00);
+    gb.mem_write(addr, val);
+    gb.ld_a_mem_a16();
+    assert_eq!(gb.get_a(), val);
 }
