@@ -584,10 +584,12 @@ impl GB {
             (0x1A, _) => { self.ld_r8_mem_r16(&GB::set_a, self.de) }
             (0x2A, _) => { self.ld_a_mem_hl_inc() }
             (0x3A, _) => { self.ld_a_mem_hl_dec() }
-
             // LDH
-            (0xE0, val) => { self.ldh_mem_a8_r8(val, &GB::get_a) }
-            (0xF0, val) => { self.ldh_r8_mem_a8(&GB::set_a, val) }
+            (0xE0, val) => { self.ldh_mem_r8_r8(val, &GB::get_a) }
+            (0xF0, val) => { self.ldh_r8_mem_r8(&GB::set_a, val) }
+            // LD C (Like LDH for hi mem)
+            (0xE2, val) => { self.ld_mem_r8_r8(&GB::get_c, &GB::get_a) }
+            (0xF2, val) => { self.ld_r8_mem_r8(&GB::set_a, &GB::get_c) }
 
             (_, _)  => { panic!("Unknown opcode") }
         }
@@ -846,6 +848,20 @@ impl GB {
         let val = self.mem_read(src);
         setter(self, val);
         return 12;
+    }
+    fn ld_mem_r8_r8(&mut self, dest_getter: &Fn(&mut GB) -> u8, src_getter: &Fn(&mut GB) -> u8) -> u32 {
+        let val = src_getter(self);
+        let mut dest = dest_getter(self) as u16;
+        dest = dest| 0xFF00;
+        self.mem_write(dest, val);
+        return 8;
+    }
+    fn ld_r8_mem_r8(&mut self, dest_setter: &Fn(&mut GB, u8), src_getter: &Fn(&mut GB) -> u8) -> u32 {
+        let mut src = src_getter(self) as u16;
+        src = src | 0xFF00;
+        let val = self.mem_read(src);
+        dest_setter(self, val);
+        return 8;
     }
 }
 
@@ -1492,5 +1508,23 @@ fn ldh_r8_mem_a8_test() {
     gb.mem_write(0xFF20, 0x11);
     gb.set_a(0x00);
     gb.ldh_r8_mem_a8(&GB::set_a, 0x20);
+    assert_eq!(gb.get_a(), 0x11);
+}
+#[test]
+fn ld_mem_r8_r8_test() {
+    let mut gb = GB::new();
+    gb.mem_write(0xFF20, 0x00);
+    gb.set_a(0x11);
+    gb.set_c(0x20);
+    gb.ld_mem_r8_r8(&GB::get_c, &GB::get_a);
+    assert_eq!(gb.mem_read(0xFF20), 0x11);
+}
+#[test]
+fn ld_r8_mem_r8_test() {
+    let mut gb = GB::new();
+    gb.mem_write(0xFF20, 0x11);
+    gb.set_a(0x00);
+    gb.set_c(0x20);
+    gb.ld_r8_mem_r8(&GB::set_a, &GB::get_c);
     assert_eq!(gb.get_a(), 0x11);
 }
