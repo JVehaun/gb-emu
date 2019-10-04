@@ -585,6 +585,10 @@ impl GB {
             (0x2A, _) => { self.ld_a_mem_hl_inc() }
             (0x3A, _) => { self.ld_a_mem_hl_dec() }
 
+            // LDH
+            (0xE0, val) => { self.ldh_mem_a8_r8(val, &GB::get_a) }
+            (0xF0, val) => { self.ldh_r8_mem_a8(&GB::set_a, val) }
+
             (_, _)  => { panic!("Unknown opcode") }
         }
     }
@@ -830,6 +834,18 @@ impl GB {
         self.set_a(val);
         self.hl -= 1;
         return 8;
+    }
+    fn ldh_mem_a8_r8(&mut self, dest_addr: u8, getter: &Fn(&mut GB) -> u8) -> u32 {
+        let val = getter(self);
+        let dest = (dest_addr as u16)| 0xFF00;
+        self.mem_write(dest, val);
+        return 12;
+    }
+    fn ldh_r8_mem_a8(&mut self, setter: &Fn(&mut GB, u8), src_addr: u8) -> u32 {
+        let src = (src_addr as u16)| 0xFF00;
+        let val = self.mem_read(src);
+        setter(self, val);
+        return 12;
     }
 }
 
@@ -1461,4 +1477,20 @@ fn ld_a_mem_hl_dec_test() {
     gb.ld_a_mem_hl_dec();
     assert_eq!(gb.get_a(), 0xFF);
     assert_eq!(gb.hl, 0x1E);
+}
+#[test]
+fn ldh_mem_a8_r8_test() {
+    let mut gb = GB::new();
+    gb.mem_write(0xFF20, 0x00);
+    gb.set_a(0x11);
+    gb.ldh_mem_a8_r8(0x20, &GB::get_a);
+    assert_eq!(gb.mem_read(0xFF20), 0x11);
+}
+#[test]
+fn ldh_r8_mem_a8_test() {
+    let mut gb = GB::new();
+    gb.mem_write(0xFF20, 0x11);
+    gb.set_a(0x00);
+    gb.ldh_r8_mem_a8(&GB::set_a, 0x20);
+    assert_eq!(gb.get_a(), 0x11);
 }
