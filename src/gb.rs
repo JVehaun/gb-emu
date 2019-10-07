@@ -1287,22 +1287,22 @@ impl GB {
     fn dec_bc(&mut self) -> u32 {
         let (result, _) = self.bc.overflowing_sub(1);
         self.bc = result;
-        return 4;
+        return 8;
     }
     fn dec_de(&mut self) -> u32 {
         let (result, _) = self.de.overflowing_sub(1);
         self.de = result;
-        return 4;
+        return 8;
     }
     fn dec_hl(&mut self) -> u32 {
         let (result, _) = self.hl.overflowing_sub(1);
         self.hl = result;
-        return 4;
+        return 8;
     }
     fn dec_sp(&mut self) -> u32 {
         let (result, _) = self.sp.overflowing_sub(1);
         self.sp = result;
-        return 4;
+        return 8;
     }
     fn inc_r8(&mut self, setter: &Fn(&mut GB, u8), getter: &Fn(&mut GB) -> u8) -> u32 {
         let mut val = getter(self);
@@ -1331,22 +1331,22 @@ impl GB {
     fn inc_bc(&mut self) -> u32 {
         let (result, _) = self.bc.overflowing_add(1);
         self.bc = result;
-        return 4;
+        return 8;
     }
     fn inc_de(&mut self) -> u32 {
         let (result, _) = self.de.overflowing_add(1);
         self.de = result;
-        return 4;
+        return 8;
     }
     fn inc_hl(&mut self) -> u32 {
         let (result, _) = self.hl.overflowing_add(1);
         self.hl = result;
-        return 4;
+        return 8;
     }
     fn inc_sp(&mut self) -> u32 {
         let (result, _) = self.sp.overflowing_add(1);
         self.sp = result;
-        return 4;
+        return 8;
     }
 }
 
