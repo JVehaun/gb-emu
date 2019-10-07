@@ -668,7 +668,14 @@ impl GB {
             (0xF8, val) => { self.ld_hl_sp_plus_a8(val) }
             (0xF9, val) => { self.ld_sp_hl() }
             // Arithmetic d8
-            (0xC6, cal) => { self.cp_r8(val) }
+            (0xC6, val) => { self.add_r8(val) }
+            (0xD6, val) => { self.sub_r8(val) }
+            (0xE6, val) => { self.and_r8(val) }
+            (0xF6, val) => { self.or_r8(val) }
+            (0xCE, val) => { self.adc_r8(val) }
+            (0xDE, val) => { self.sbc_r8(val) }
+            (0xEE, val) => { self.xor_r8(val) }
+            (0xFE, val) => { self.cp_r8(val) }
 
 
             (_, _)  => { panic!("Unknown opcode") }
