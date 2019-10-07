@@ -916,7 +916,7 @@ impl GB {
         let (result, _) = result.overflowing_add(self.get_c());
         self.set_a(result);
 
-
+        // Calculate C
         let (v1, c1) = a.overflowing_add(val);
         let (_, c2) = v1.overflowing_add(self.get_c());
         if c1 || c2{
@@ -933,9 +933,17 @@ impl GB {
         } else {
             self.set_h(0);
         }
-        return 4;
-    }
-    fn adc_mem_hl(&mut self) -> u32 {
+
+        // Calculate Z
+        if result == 0 {
+            self.set_z(0);
+        } else {
+            self.set_z(1);
+        }
+
+        // Set N
+        self.set_n(0);
+
         return 4;
     }
     fn add_r8(&mut self, val: u8) -> u32 {
@@ -943,7 +951,7 @@ impl GB {
         let (result, _) = a.overflowing_add(val);
         self.set_a(result);
 
-
+        // Calculate C
         let (_, c) = a.overflowing_add(val);
         if c {
             self.set_c(1);
@@ -958,45 +966,35 @@ impl GB {
         } else {
             self.set_h(0);
         }
-        return 4;
-    }
-    fn add_mem_hl(&mut self) -> u32 {
+
+        // Calculate Z
+        if result == 0 {
+            self.set_z(0);
+        } else {
+            self.set_z(1);
+        }
+
+        // Set N
+        self.set_n(0);
+
         return 4;
     }
     fn and_r8(&mut self, val: u8) -> u32 {
         return 4;
     }
-    fn and_mem_hl(&mut self) -> u32 {
-        return 4;
-    }
     fn cp_r8(&mut self, val: u8) -> u32 {
-        return 4;
-    }
-    fn cp_mem_hl(&mut self) -> u32 {
         return 4;
     }
     fn or_r8(&mut self, val: u8) -> u32 {
         return 4;
     }
-    fn or_mem_hl(&mut self) -> u32 {
-        return 4;
-    }
     fn sbc_r8(&mut self, val: u8) -> u32 {
-        return 4;
-    }
-    fn sbc_mem_hl(&mut self) -> u32 {
         return 4;
     }
     fn sub_r8(&mut self, val: u8) -> u32 {
         return 4;
     }
-    fn sub_mem_hl(&mut self) -> u32 {
-        return 4;
-    }
     fn xor_r8(&mut self, val: u8) -> u32 {
-        return 4;
-    }
-    fn xor_mem_hl(&mut self) -> u32 {
         return 4;
     }
 
