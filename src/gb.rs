@@ -676,7 +676,33 @@ impl GB {
             (0xDE, val) => { self.sbc_r8(val) }
             (0xEE, val) => { self.xor_r8(val) }
             (0xFE, val) => { self.cp_r8(val) }
-
+            // DEC and INC r16
+            (0x03, _) => { self.inc_bc() }
+            (0x13, _) => { self.inc_de() }
+            (0x23, _) => { self.inc_hl() }
+            (0x33, _) => { self.inc_sp() }
+            (0x0B, _) => { self.dec_bc() }
+            (0x1B, _) => { self.dec_de() }
+            (0x2B, _) => { self.dec_hl() }
+            (0x3B, _) => { self.dec_sp() }
+            // DEC r8
+            (0x05, _) => { self.dec_r8(&GB::set_b, &GB::get_b) }
+            (0x15, _) => { self.dec_r8(&GB::set_d, &GB::get_d) }
+            (0x25, _) => { self.dec_r8(&GB::set_h, &GB::get_h) }
+            (0x35, _) => { panic!("Not yet implemented") }
+            (0x0D, _) => { self.dec_r8(&GB::set_c, &GB::get_c) }
+            (0x1D, _) => { self.dec_r8(&GB::set_e, &GB::get_e) }
+            (0x2D, _) => { self.dec_r8(&GB::set_l, &GB::get_l) }
+            (0x3D, _) => { self.dec_r8(&GB::set_a, &GB::get_a) }
+            // INC r8
+            (0x04, _) => { self.inc_r8(&GB::set_b, &GB::get_b) }
+            (0x14, _) => { self.inc_r8(&GB::set_d, &GB::get_d) }
+            (0x24, _) => { self.inc_r8(&GB::set_h, &GB::get_h) }
+            (0x34, _) => { panic!("Not yet implemented") }
+            (0x0C, _) => { self.inc_r8(&GB::set_c, &GB::get_c) }
+            (0x1C, _) => { self.inc_r8(&GB::set_e, &GB::get_e) }
+            (0x2C, _) => { self.inc_r8(&GB::set_l, &GB::get_l) }
+            (0x3C, _) => { self.inc_r8(&GB::set_a, &GB::get_a) }
 
             (_, _)  => { panic!("Unknown opcode") }
         }
@@ -1234,6 +1260,94 @@ impl GB {
         return 4;
     }
 
+    fn dec_r8(&mut self, setter: &Fn(&mut GB, u8), getter: &Fn(&mut GB) -> u8) -> u32 {
+        let mut val = getter(self);
+        let (result, _) = val.overflowing_sub(1);
+        setter(self, result);
+
+        // Calculate Z
+        if result == 0 {
+            self.set_z(0);
+        } else {
+            self.set_z(1);
+        }
+
+        // Calculate H
+        if (val << 4) == 0 {
+            self.set_h(0);
+        } else {
+            self.set_h(1);
+        }
+
+        // Set N
+        self.set_n(1);
+
+        return 4;
+    }
+    fn dec_bc(&mut self) -> u32 {
+        let (result, _) = self.bc.overflowing_sub(1);
+        self.bc = result;
+        return 4;
+    }
+    fn dec_de(&mut self) -> u32 {
+        let (result, _) = self.de.overflowing_sub(1);
+        self.de = result;
+        return 4;
+    }
+    fn dec_hl(&mut self) -> u32 {
+        let (result, _) = self.hl.overflowing_sub(1);
+        self.hl = result;
+        return 4;
+    }
+    fn dec_sp(&mut self) -> u32 {
+        let (result, _) = self.sp.overflowing_sub(1);
+        self.sp = result;
+        return 4;
+    }
+    fn inc_r8(&mut self, setter: &Fn(&mut GB, u8), getter: &Fn(&mut GB) -> u8) -> u32 {
+        let mut val = getter(self);
+        let (result, _) = val.overflowing_add(1);
+        setter(self, result);
+
+        // Calculate Z
+        if result == 0 {
+            self.set_z(0);
+        } else {
+            self.set_z(1);
+        }
+
+        // Calculate H
+        if (val << 4) == 0 {
+            self.set_h(0);
+        } else {
+            self.set_h(1);
+        }
+
+        // Set N
+        self.set_n(1);
+
+        return 4;
+    }
+    fn inc_bc(&mut self) -> u32 {
+        let (result, _) = self.bc.overflowing_add(1);
+        self.bc = result;
+        return 4;
+    }
+    fn inc_de(&mut self) -> u32 {
+        let (result, _) = self.de.overflowing_add(1);
+        self.de = result;
+        return 4;
+    }
+    fn inc_hl(&mut self) -> u32 {
+        let (result, _) = self.hl.overflowing_add(1);
+        self.hl = result;
+        return 4;
+    }
+    fn inc_sp(&mut self) -> u32 {
+        let (result, _) = self.sp.overflowing_add(1);
+        self.sp = result;
+        return 4;
+    }
 }
 
 
@@ -2012,4 +2126,36 @@ fn xor_r8_test() {
     gb.xor_r8(0b11110000);
     assert_eq!(gb.get_a(), 0b01101001);
     assert_eq!(gb.get_c(), 0x00);
+}
+#[test]
+fn dec_r8_test() {
+    let mut gb = GB::new();
+    gb.set_b(0x10);
+    gb.set_h(1);
+    gb.dec_r8(&GB::set_b, &GB::get_b);
+    assert_eq!(gb.get_b(), 0x0F);
+    assert_eq!(gb.get_h(), 0x00);
+}
+#[test]
+fn inc_r8_test() {
+    let mut gb = GB::new();
+    gb.set_b(0x0F);
+    gb.set_h(0);
+    gb.inc_r8(&GB::set_b, &GB::get_b);
+    assert_eq!(gb.get_b(), 0x10);
+    assert_eq!(gb.get_h(), 0x01);
+}
+#[test]
+fn dec_bc_test() {
+    let mut gb = GB::new();
+    gb.bc = (0x1111);
+    gb.dec_bc();
+    assert_eq!(gb.bc, 0x1110);
+}
+#[test]
+fn inc_bc_test() {
+    let mut gb = GB::new();
+    gb.bc = (0x1111);
+    gb.inc_bc();
+    assert_eq!(gb.bc, 0x1112);
 }
