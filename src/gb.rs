@@ -599,49 +599,49 @@ impl GB {
         }
     }
 
-    pub fn shift_a(mut gb: &mut GB, f: &Fn(&mut GB, u8) -> u8) -> u32 {
+    pub fn shift_a(gb: &mut GB, f: &Fn(&mut GB, u8) -> u8) -> u32 {
         let mut r = gb.get_a();
         r = f(gb, r);
         gb.set_a(r);
         return 8;
     }
-    pub fn shift_b(mut gb: &mut GB, f: &Fn(&mut GB, u8) -> u8) -> u32 {
+    pub fn shift_b(gb: &mut GB, f: &Fn(&mut GB, u8) -> u8) -> u32 {
         let mut r = gb.get_b();
         r = f(gb, r);
         gb.set_b(r);
         return 8;
     }
-    pub fn shift_c(mut gb: &mut GB, f: &Fn(&mut GB, u8) -> u8) -> u32 {
+    pub fn shift_c(gb: &mut GB, f: &Fn(&mut GB, u8) -> u8) -> u32 {
         let mut r = gb.get_c();
         r = f(gb, r);
         gb.set_c(r);
         return 8;
     }
-    pub fn shift_d(mut gb: &mut GB, f: &Fn(&mut GB, u8) -> u8) -> u32 {
+    pub fn shift_d(gb: &mut GB, f: &Fn(&mut GB, u8) -> u8) -> u32 {
         let mut r = gb.get_d();
         r = f(gb, r);
         gb.set_d(r);
         return 8;
     }
-    pub fn shift_e(mut gb: &mut GB, f: &Fn(&mut GB, u8) -> u8) -> u32 {
+    pub fn shift_e(gb: &mut GB, f: &Fn(&mut GB, u8) -> u8) -> u32 {
         let mut r = gb.get_e();
         r = f(gb, r);
         gb.set_e(r);
         return 8;
     }
-    pub fn shift_h(mut gb: &mut GB, f: &Fn(&mut GB, u8) -> u8) -> u32 {
+    pub fn shift_h(gb: &mut GB, f: &Fn(&mut GB, u8) -> u8) -> u32 {
         let mut r = gb.get_h();
         r = f(gb, r);
         gb.set_h(r);
         return 8;
     }
-    pub fn shift_l(mut gb: &mut GB, f: &Fn(&mut GB, u8) -> u8) -> u32 {
+    pub fn shift_l(gb: &mut GB, f: &Fn(&mut GB, u8) -> u8) -> u32 {
         let mut r = gb.get_l();
         r = f(gb, r);
         gb.set_l(r);
         return 8;
     }
-    pub fn shift_mem(mut gb: &mut GB, f: &Fn(&mut GB, u8) -> u8) -> u32 {
+    pub fn shift_mem(gb: &mut GB, f: &Fn(&mut GB, u8) -> u8) -> u32 {
         let addr = gb.get_hl();
         let mut r = gb.mem_read(addr);
         r = f(gb, r);
@@ -725,37 +725,37 @@ impl GB {
 
 
     //BIT testing/setting functions
-    fn bit_0(&mut self, mut r: u8) -> u8 { return self.bit(r, 0); }
-    fn bit_1(&mut self, mut r: u8) -> u8 { return self.bit(r, 1); }
-    fn bit_2(&mut self, mut r: u8) -> u8 { return self.bit(r, 2); }
-    fn bit_3(&mut self, mut r: u8) -> u8 { return self.bit(r, 3); }
-    fn bit_4(&mut self, mut r: u8) -> u8 { return self.bit(r, 4); }
-    fn bit_5(&mut self, mut r: u8) -> u8 { return self.bit(r, 5); }
-    fn bit_6(&mut self, mut r: u8) -> u8 { return self.bit(r, 6); }
-    fn bit_7(&mut self, mut r: u8) -> u8 { return self.bit(r, 7); }
-    fn bit(&mut self, mut r: u8, i: u8) -> u8 {
+    fn bit_0(&mut self, r: u8) -> u8 { return self.bit(r, 0); }
+    fn bit_1(&mut self, r: u8) -> u8 { return self.bit(r, 1); }
+    fn bit_2(&mut self, r: u8) -> u8 { return self.bit(r, 2); }
+    fn bit_3(&mut self, r: u8) -> u8 { return self.bit(r, 3); }
+    fn bit_4(&mut self, r: u8) -> u8 { return self.bit(r, 4); }
+    fn bit_5(&mut self, r: u8) -> u8 { return self.bit(r, 5); }
+    fn bit_6(&mut self, r: u8) -> u8 { return self.bit(r, 6); }
+    fn bit_7(&mut self, r: u8) -> u8 { return self.bit(r, 7); }
+    fn bit(&mut self, r: u8, i: u8) -> u8 {
         self.set_z((r >> i) & 1);
         return r;
     }
-    fn res_0(&mut self, mut r: u8) -> u8 { return self.res(r, 0); }
-    fn res_1(&mut self, mut r: u8) -> u8 { return self.res(r, 1); }
-    fn res_2(&mut self, mut r: u8) -> u8 { return self.res(r, 2); }
-    fn res_3(&mut self, mut r: u8) -> u8 { return self.res(r, 3); }
-    fn res_4(&mut self, mut r: u8) -> u8 { return self.res(r, 4); }
-    fn res_5(&mut self, mut r: u8) -> u8 { return self.res(r, 5); }
-    fn res_6(&mut self, mut r: u8) -> u8 { return self.res(r, 6); }
-    fn res_7(&mut self, mut r: u8) -> u8 { return self.res(r, 7); }
-    fn res(&mut self, mut r: u8, i: u8) -> u8 {
+    fn res_0(&mut self, r: u8) -> u8 { return self.res(r, 0); }
+    fn res_1(&mut self, r: u8) -> u8 { return self.res(r, 1); }
+    fn res_2(&mut self, r: u8) -> u8 { return self.res(r, 2); }
+    fn res_3(&mut self, r: u8) -> u8 { return self.res(r, 3); }
+    fn res_4(&mut self, r: u8) -> u8 { return self.res(r, 4); }
+    fn res_5(&mut self, r: u8) -> u8 { return self.res(r, 5); }
+    fn res_6(&mut self, r: u8) -> u8 { return self.res(r, 6); }
+    fn res_7(&mut self, r: u8) -> u8 { return self.res(r, 7); }
+    fn res(&mut self, r: u8, i: u8) -> u8 {
         return r & !(1 << i);
     }
-    fn set_0(&mut self, mut r: u8) -> u8 { return self.set(r, 0); }
-    fn set_1(&mut self, mut r: u8) -> u8 { return self.set(r, 1); }
-    fn set_2(&mut self, mut r: u8) -> u8 { return self.set(r, 2); }
-    fn set_3(&mut self, mut r: u8) -> u8 { return self.set(r, 3); }
-    fn set_4(&mut self, mut r: u8) -> u8 { return self.set(r, 4); }
-    fn set_5(&mut self, mut r: u8) -> u8 { return self.set(r, 5); }
-    fn set_6(&mut self, mut r: u8) -> u8 { return self.set(r, 6); }
-    fn set_7(&mut self, mut r: u8) -> u8 { return self.set(r, 7); }
+    fn set_0(&mut self, r: u8) -> u8 { return self.set(r, 0); }
+    fn set_1(&mut self, r: u8) -> u8 { return self.set(r, 1); }
+    fn set_2(&mut self, r: u8) -> u8 { return self.set(r, 2); }
+    fn set_3(&mut self, r: u8) -> u8 { return self.set(r, 3); }
+    fn set_4(&mut self, r: u8) -> u8 { return self.set(r, 4); }
+    fn set_5(&mut self, r: u8) -> u8 { return self.set(r, 5); }
+    fn set_6(&mut self, r: u8) -> u8 { return self.set(r, 6); }
+    fn set_7(&mut self, r: u8) -> u8 { return self.set(r, 7); }
     fn set(&mut self, r: u8, i: u8) -> u8 {
         return r | (1 << i);
     }
@@ -908,6 +908,57 @@ impl GB {
         self.set_a(val);
         return 16;
     }
+
+    // Arithmetic
+    fn adc_r8(&mut self, val: u8) -> u32 {
+        return 4;
+    }
+    fn adc_mem_hl(&mut self) -> u32 {
+        return 4;
+    }
+    fn add_r8(&mut self, val: u8) -> u32 {
+        return 4;
+    }
+    fn add_mem_hl(&mut self) -> u32 {
+        return 4;
+    }
+    fn and_r8(&mut self, val: u8) -> u32 {
+        return 4;
+    }
+    fn and_mem_hl(&mut self) -> u32 {
+        return 4;
+    }
+    fn cp_r8(&mut self, val: u8) -> u32 {
+        return 4;
+    }
+    fn cp_mem_hl(&mut self) -> u32 {
+        return 4;
+    }
+    fn or_r8(&mut self, val: u8) -> u32 {
+        return 4;
+    }
+    fn or_mem_hl(&mut self) -> u32 {
+        return 4;
+    }
+    fn sbc_r8(&mut self, val: u8) -> u32 {
+        return 4;
+    }
+    fn sbc_mem_hl(&mut self) -> u32 {
+        return 4;
+    }
+    fn sub_r8(&mut self, val: u8) -> u32 {
+        return 4;
+    }
+    fn sub_mem_hl(&mut self) -> u32 {
+        return 4;
+    }
+    fn xor_r8(&mut self, val: u8) -> u32 {
+        return 4;
+    }
+    fn xor_mem_hl(&mut self) -> u32 {
+        return 4;
+    }
+
 }
 
 
@@ -1612,4 +1663,78 @@ fn ld_a_mem_a16_test() {
     gb.mem_write(addr, val);
     gb.ld_a_mem_a16();
     assert_eq!(gb.get_a(), val);
+}
+
+// ADD Commands
+#[test]
+fn adc_r8_test() {
+    let mut gb = GB::new();
+    gb.set_a(0xF0);
+    gb.set_c(0x1);
+    gb.adc_r8(0x0F);
+    assert_eq!(gb.get_a(), 0x00);
+    assert_eq!(gb.get_c(), 0x01);
+}
+#[test]
+fn add_r8_test() {
+    let mut gb = GB::new();
+    gb.set_a(0xF0);
+    gb.set_c(0x1);
+    gb.add_r8(0x0F);
+    assert_eq!(gb.get_a(), 0xFF);
+    assert_eq!(gb.get_c(), 0x00);
+}
+#[test]
+fn and_r8_test() {
+    let mut gb = GB::new();
+    gb.set_a(0b10011001);
+    gb.set_c(0x1);
+    gb.and_r8(0b11110000);
+    assert_eq!(gb.get_a(), 0b10010000);
+    assert_eq!(gb.get_c(), 0x00);
+}
+#[test]
+fn cp_r8_test() {
+    let mut gb = GB::new();
+    gb.set_a(0xF0);
+    gb.set_c(0x0);
+    gb.cp_r8(0x10);
+    assert_eq!(gb.get_a(), 0xF0);
+    assert_eq!(gb.get_c(), 0x01);
+}
+#[test]
+fn or_r8_test() {
+    let mut gb = GB::new();
+    gb.set_a(0b10011001);
+    gb.set_c(0x1);
+    gb.or_r8(0b11110000);
+    assert_eq!(gb.get_a(), 0b11110000);
+    assert_eq!(gb.get_c(), 0x00);
+}
+#[test]
+fn sbc_r8_test() {
+    let mut gb = GB::new();
+    gb.set_a(0xF0);
+    gb.set_c(0x1);
+    gb.sub_r8(0x0F);
+    assert_eq!(gb.get_a(), 0xF0);
+    assert_eq!(gb.get_c(), 0x00);
+}
+#[test]
+fn sub_r8_test() {
+    let mut gb = GB::new();
+    gb.set_a(0xF0);
+    gb.set_c(0x1);
+    gb.sub_r8(0x0F);
+    assert_eq!(gb.get_a(), 0xE1);
+    assert_eq!(gb.get_c(), 0x00);
+}
+#[test]
+fn xor_r8_test() {
+    let mut gb = GB::new();
+    gb.set_a(0b10011001);
+    gb.set_c(0x1);
+    gb.xor_r8(0b11110000);
+    assert_eq!(gb.get_a(), 0b01101001);
+    assert_eq!(gb.get_c(), 0x00);
 }
