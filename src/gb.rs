@@ -568,6 +568,80 @@ impl GB {
             (0x66, _) => { self.ld_r8_mem_r16(&GB::set_a, self.hl) }
             (0x7F, _) => { self.ld_r8_r8(&GB::set_a, &GB::get_a) }
 
+            // Arithmetic ops
+            // ADD
+            (0x80, _) => { let val = self.get_b(); self.add_r8(val) }
+            (0x81, _) => { let val = self.get_c(); self.add_r8(val) }
+            (0x82, _) => { let val = self.get_d(); self.add_r8(val) }
+            (0x83, _) => { let val = self.get_e(); self.add_r8(val) }
+            (0x84, _) => { let val = self.get_h(); self.add_r8(val) }
+            (0x85, _) => { let val = self.get_l(); self.add_r8(val) }
+            (0x86, _) => { let val = self.mem_read(self.hl); self.add_r8(val) }
+            (0x87, _) => { let val = self.get_a(); self.add_r8(val) }
+            // ADC
+            (0x88, _) => { let val = self.get_b(); self.adc_r8(val) }
+            (0x89, _) => { let val = self.get_c(); self.adc_r8(val) }
+            (0x8A, _) => { let val = self.get_d(); self.adc_r8(val) }
+            (0x8B, _) => { let val = self.get_e(); self.adc_r8(val) }
+            (0x8C, _) => { let val = self.get_h(); self.adc_r8(val) }
+            (0x8D, _) => { let val = self.get_l(); self.adc_r8(val) }
+            (0x8E, _) => { let val = self.mem_read(self.hl); self.adc_r8(val) }
+            (0x8F, _) => { let val = self.get_a(); self.adc_r8(val) }
+            // SUB
+            (0x90, _) => { let val = self.get_b(); self.sub_r8(val) }
+            (0x91, _) => { let val = self.get_c(); self.sub_r8(val) }
+            (0x92, _) => { let val = self.get_d(); self.sub_r8(val) }
+            (0x93, _) => { let val = self.get_e(); self.sub_r8(val) }
+            (0x94, _) => { let val = self.get_h(); self.sub_r8(val) }
+            (0x95, _) => { let val = self.get_l(); self.sub_r8(val) }
+            (0x96, _) => { let val = self.mem_read(self.hl); self.sub_r8(val) }
+            (0x97, _) => { let val = self.get_a(); self.sub_r8(val) }
+            // SBC
+            (0x98, _) => { let val = self.get_b(); self.sbc_r8(val) }
+            (0x99, _) => { let val = self.get_c(); self.sbc_r8(val) }
+            (0x9A, _) => { let val = self.get_d(); self.sbc_r8(val) }
+            (0x9B, _) => { let val = self.get_e(); self.sbc_r8(val) }
+            (0x9C, _) => { let val = self.get_h(); self.sbc_r8(val) }
+            (0x9D, _) => { let val = self.get_l(); self.sbc_r8(val) }
+            (0x9E, _) => { let val = self.mem_read(self.hl); self.sbc_r8(val) }
+            (0x9F, _) => { let val = self.get_a(); self.sbc_r8(val) }
+            // AND
+            (0xA0, _) => { let val = self.get_b(); self.and_r8(val) }
+            (0xA1, _) => { let val = self.get_c(); self.and_r8(val) }
+            (0xA2, _) => { let val = self.get_d(); self.and_r8(val) }
+            (0xA3, _) => { let val = self.get_e(); self.and_r8(val) }
+            (0xA4, _) => { let val = self.get_h(); self.and_r8(val) }
+            (0xA5, _) => { let val = self.get_l(); self.and_r8(val) }
+            (0xA6, _) => { let val = self.mem_read(self.hl); self.and_r8(val) }
+            (0xA7, _) => { let val = self.get_a(); self.and_r8(val) }
+            // XOR
+            (0xA8, _) => { let val = self.get_b(); self.xor_r8(val) }
+            (0xA9, _) => { let val = self.get_c(); self.xor_r8(val) }
+            (0xAA, _) => { let val = self.get_d(); self.xor_r8(val) }
+            (0xAB, _) => { let val = self.get_e(); self.xor_r8(val) }
+            (0xAC, _) => { let val = self.get_h(); self.xor_r8(val) }
+            (0xAD, _) => { let val = self.get_l(); self.xor_r8(val) }
+            (0xAE, _) => { let val = self.mem_read(self.hl); self.xor_r8(val) }
+            (0xAF, _) => { let val = self.get_a(); self.xor_r8(val) }
+            // OR
+            (0xB0, _) => { let val = self.get_b(); self.or_r8(val) }
+            (0xB1, _) => { let val = self.get_c(); self.or_r8(val) }
+            (0xB2, _) => { let val = self.get_d(); self.or_r8(val) }
+            (0xB3, _) => { let val = self.get_e(); self.or_r8(val) }
+            (0xB4, _) => { let val = self.get_h(); self.or_r8(val) }
+            (0xB5, _) => { let val = self.get_l(); self.or_r8(val) }
+            (0xB6, _) => { let val = self.mem_read(self.hl); self.or_r8(val) }
+            (0xB7, _) => { let val = self.get_a(); self.or_r8(val) }
+            // CP
+            (0xB8, _) => { let val = self.get_b(); self.cp_r8(val) }
+            (0xB9, _) => { let val = self.get_c(); self.cp_r8(val) }
+            (0xBA, _) => { let val = self.get_d(); self.cp_r8(val) }
+            (0xBB, _) => { let val = self.get_e(); self.cp_r8(val) }
+            (0xBC, _) => { let val = self.get_h(); self.cp_r8(val) }
+            (0xBD, _) => { let val = self.get_l(); self.cp_r8(val) }
+            (0xBE, _) => { let val = self.mem_read(self.hl); self.cp_r8(val) }
+            (0xBF, _) => { let val = self.get_a(); self.cp_r8(val) }
+
 
             // Stuff gets weird here
             // Assorted LD r8, d8
@@ -593,6 +667,8 @@ impl GB {
             // LD SP/HL
             (0xF8, val) => { self.ld_hl_sp_plus_a8(val) }
             (0xF9, val) => { self.ld_sp_hl() }
+            // Arithmetic d8
+            (0xC6, cal) => { self.cp_r8(val) }
 
 
             (_, _)  => { panic!("Unknown opcode") }
