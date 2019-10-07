@@ -980,12 +980,51 @@ impl GB {
         return 4;
     }
     fn and_r8(&mut self, val: u8) -> u32 {
+        let a = self.get_a();
+        let result = a & val;
+        self.set_a(result);
+
+        // Set C
+        self.set_c(0);
+
+        // Set H
+        self.set_h(0);
+
+        // Calculate Z
+        if result == 0 {
+            self.set_z(0);
+        } else {
+            self.set_z(1);
+        }
+
+        // Set N
+        self.set_n(0);
+
         return 4;
     }
     fn cp_r8(&mut self, val: u8) -> u32 {
         return 4;
     }
     fn or_r8(&mut self, val: u8) -> u32 {
+        let a = self.get_a();
+        let result = a | val;
+        self.set_a(result);
+
+        // Set C
+        self.set_c(0);
+
+        // Set H
+        self.set_h(0);
+
+        // Calculate Z
+        if result == 0 {
+            self.set_z(0);
+        } else {
+            self.set_z(1);
+        }
+
+        // Set N
+        self.set_n(0);
         return 4;
     }
     fn sbc_r8(&mut self, val: u8) -> u32 {
@@ -995,6 +1034,25 @@ impl GB {
         return 4;
     }
     fn xor_r8(&mut self, val: u8) -> u32 {
+        let a = self.get_a();
+        let result = a ^ val;
+        self.set_a(result);
+
+        // Set C
+        self.set_c(0);
+
+        // Set H
+        self.set_h(0);
+
+        // Calculate Z
+        if result == 0 {
+            self.set_z(0);
+        } else {
+            self.set_z(1);
+        }
+
+        // Set N
+        self.set_n(0);
         return 4;
     }
 
@@ -1747,7 +1805,7 @@ fn or_r8_test() {
     gb.set_a(0b10011001);
     gb.set_c(0x1);
     gb.or_r8(0b11110000);
-    assert_eq!(gb.get_a(), 0b11110000);
+    assert_eq!(gb.get_a(), 0b11111001);
     assert_eq!(gb.get_c(), 0x00);
 }
 #[test]
