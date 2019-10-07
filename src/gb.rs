@@ -1028,9 +1028,72 @@ impl GB {
         return 4;
     }
     fn sbc_r8(&mut self, val: u8) -> u32 {
+        let a = self.get_a();
+        let (mut result, _) = a.overflowing_sub(val);
+        let (result, _) = result.overflowing_sub(self.get_c());
+        self.set_a(result);
+
+        // Calculate C
+        let (v1, c1) = a.overflowing_sub(val);
+        let (_, c2) = v1.overflowing_sub(self.get_c());
+        if c1 || c2{
+            self.set_c(1);
+        } else {
+            self.set_c(0);
+        }
+
+        // Calculate H
+        let (v1, h1) = (a << 4).overflowing_sub(val << 4);
+        let (_, h2) = v1.overflowing_sub(self.get_c() << 4);
+        if h1 || h2 {
+            self.set_h(1);
+        } else {
+            self.set_h(0);
+        }
+
+        // Calculate Z
+        if result == 0 {
+            self.set_z(0);
+        } else {
+            self.set_z(1);
+        }
+
+        // Set N
+        self.set_n(1);
+
         return 4;
     }
     fn sub_r8(&mut self, val: u8) -> u32 {
+        let a = self.get_a();
+        let (result, _) = a.overflowing_sub(val);
+        self.set_a(result);
+
+        // Calculate C
+        let (_, c) = a.overflowing_sub(val);
+        if c {
+            self.set_c(1);
+        } else {
+            self.set_c(0);
+        }
+
+        // Calculate H
+        let (_, h) = (a << 4).overflowing_sub(val << 4);
+        if h {
+            self.set_h(1);
+        } else {
+            self.set_h(0);
+        }
+
+        // Calculate Z
+        if result == 0 {
+            self.set_z(0);
+        } else {
+            self.set_z(1);
+        }
+
+        // Set N
+        self.set_n(1);
+
         return 4;
     }
     fn xor_r8(&mut self, val: u8) -> u32 {
@@ -1813,8 +1876,8 @@ fn sbc_r8_test() {
     let mut gb = GB::new();
     gb.set_a(0xF0);
     gb.set_c(0x1);
-    gb.sub_r8(0x0F);
-    assert_eq!(gb.get_a(), 0xF0);
+    gb.sbc_r8(0x0F);
+    assert_eq!(gb.get_a(), 0xE0);
     assert_eq!(gb.get_c(), 0x00);
 }
 #[test]
