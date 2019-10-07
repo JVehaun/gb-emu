@@ -917,6 +917,25 @@ impl GB {
         return 4;
     }
     fn add_r8(&mut self, val: u8) -> u32 {
+        let a = self.get_a();
+        let (result, _) = a.overflowing_add(val);
+        self.set_a(result);
+
+
+        let (_, c) = a.overflowing_add(val);
+        if c {
+            self.set_c(1);
+        } else {
+            self.set_c(0);
+        }
+
+        // Calculate H
+        let (_, h) = (a << 4).overflowing_add(val << 4);
+        if h {
+            self.set_h(1);
+        } else {
+            self.set_h(0);
+        }
         return 4;
     }
     fn add_mem_hl(&mut self) -> u32 {
