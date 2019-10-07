@@ -911,6 +911,28 @@ impl GB {
 
     // Arithmetic
     fn adc_r8(&mut self, val: u8) -> u32 {
+        let a = self.get_a();
+        let (mut result, _) = a.overflowing_add(val);
+        let (result, _) = result.overflowing_add(self.get_c());
+        self.set_a(result);
+
+
+        let (v1, c1) = a.overflowing_add(val);
+        let (_, c2) = v1.overflowing_add(self.get_c());
+        if c1 || c2{
+            self.set_c(1);
+        } else {
+            self.set_c(0);
+        }
+
+        // Calculate H
+        let (v1, h1) = (a << 4).overflowing_add(val << 4);
+        let (_, h2) = v1.overflowing_add(self.get_c() << 4);
+        if h1 || h2 {
+            self.set_h(1);
+        } else {
+            self.set_h(0);
+        }
         return 4;
     }
     fn adc_mem_hl(&mut self) -> u32 {
