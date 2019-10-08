@@ -707,7 +707,8 @@ impl GB {
             (0xF3, _) => { self.di() }
             (0xFB, _) => { self.ei() }
             // JP a16
-            (0xC3, _) => {self.jp_a16() }
+            (0xC3, _) => { self.jp_a16() }
+            (0xE9, _) => { self.jp_hl() }
 
 
             (_, _)  => { panic!("Unknown opcode") }
@@ -1365,6 +1366,10 @@ impl GB {
     fn jp_a16(&mut self) -> u32 {
         let a16 = ((self.mem_read(self.pc + 1) as u16) << 8) | (self.mem_read(self.pc + 2) as u16);
         self.pc = a16;
+        return 16;
+    }
+    fn jp_hl(&mut self) -> u32 {
+        self.pc = self.hl;
         return 16;
     }
 }
@@ -2199,6 +2204,14 @@ fn jp_a16_test() {
     gb.mem_write(gb.pc + 1, 0xDE);
     gb.mem_write(gb.pc + 2, 0xAD);
     gb.jp_a16();
+    assert_eq!(gb.pc, 0xDEAD);
+}
+#[test]
+fn jp_hl_test() {
+    let mut gb = GB::new();
+    gb.pc = 0x0000;
+    gb.hl = 0xDEAD;
+    gb.jp_hl();
     assert_eq!(gb.pc, 0xDEAD);
 }
 
