@@ -703,6 +703,10 @@ impl GB {
             (0x1C, _) => { self.inc_r8(&GB::set_e, &GB::get_e) }
             (0x2C, _) => { self.inc_r8(&GB::set_l, &GB::get_l) }
             (0x3C, _) => { self.inc_r8(&GB::set_a, &GB::get_a) }
+            // Interrupts
+            (0xF3, _) => { self.di() }
+            (0xFB, _) => { self.ei() }
+
 
             (_, _)  => { panic!("Unknown opcode") }
         }
@@ -1347,6 +1351,14 @@ impl GB {
         let (result, _) = self.sp.overflowing_add(1);
         self.sp = result;
         return 8;
+    }
+    fn ei(&mut self) -> u32 {
+        self.ei = 1;
+        return 4;
+    }
+    fn di(&mut self) -> u32 {
+        self.ei = 0;
+        return 4;
     }
 }
 
@@ -2158,4 +2170,18 @@ fn inc_bc_test() {
     gb.bc = (0x1111);
     gb.inc_bc();
     assert_eq!(gb.bc, 0x1112);
+}
+#[test]
+fn ei_test() {
+    let mut gb = GB::new();
+    gb.ei = 0;
+    gb.ei();
+    assert_eq!(gb.ei, 1);
+}
+#[test]
+fn di_test() {
+    let mut gb = GB::new();
+    gb.ei = 1;
+    gb.di();
+    assert_eq!(gb.ei, 0);
 }
