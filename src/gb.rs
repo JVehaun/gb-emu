@@ -706,6 +706,8 @@ impl GB {
             // Interrupts
             (0xF3, _) => { self.di() }
             (0xFB, _) => { self.ei() }
+            // JP a16
+            (0xC3, _) => {self.jp_a16() }
 
 
             (_, _)  => { panic!("Unknown opcode") }
@@ -1359,6 +1361,11 @@ impl GB {
     fn di(&mut self) -> u32 {
         self.ei = 0;
         return 4;
+    }
+    fn jp_a16(&mut self) -> u32 {
+        let a16 = ((self.mem_read(self.pc + 1) as u16) << 8) | (self.mem_read(self.pc + 2) as u16);
+        self.pc = a16;
+        return 16;
     }
 }
 
@@ -2185,3 +2192,13 @@ fn di_test() {
     gb.di();
     assert_eq!(gb.ei, 0);
 }
+#[test]
+fn jp_a16_test() {
+    let mut gb = GB::new();
+    gb.pc = 0x0000;
+    gb.mem_write(gb.pc + 1, 0xDE);
+    gb.mem_write(gb.pc + 2, 0xAD);
+    gb.jp_a16();
+    assert_eq!(gb.pc, 0xDEAD);
+}
+
