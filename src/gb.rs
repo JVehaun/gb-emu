@@ -709,6 +709,11 @@ impl GB {
             // JP a16
             (0xC3, _) => { self.jp_a16() }
             (0xE9, _) => { self.jp_hl() }
+            // JP CC, a16
+            (0xC2, _) => { self.jp_nz() }
+            (0xD2, _) => { self.jp_nc() }
+            (0xCA, _) => { self.jp_z() }
+            (0xDA, _) => { self.jp_c() }
 
 
             (_, _)  => { panic!("Unknown opcode") }
@@ -1371,6 +1376,30 @@ impl GB {
     fn jp_hl(&mut self) -> u32 {
         self.pc = self.hl;
         return 16;
+    }
+    fn jp_nz(&mut self) -> u32 {
+        if self.get_z() == 0 {
+            return self.jp_a16();
+        }
+        return 12;
+    }
+    fn jp_nc(&mut self) -> u32 {
+        if self.get_c() == 0 {
+            return self.jp_a16();
+        }
+        return 12;
+    }
+    fn jp_z(&mut self) -> u32 {
+        if self.get_z() == 1 {
+            return self.jp_a16();
+        }
+        return 12;
+    }
+    fn jp_c(&mut self) -> u32 {
+        if self.get_c() == 1 {
+            return self.jp_a16();
+        }
+        return 12;
     }
 }
 
@@ -2214,4 +2243,55 @@ fn jp_hl_test() {
     gb.jp_hl();
     assert_eq!(gb.pc, 0xDEAD);
 }
-
+#[test]
+fn jp_nz_test() {
+    let mut gb = GB::new();
+    gb.pc = 0x0000;
+    gb.mem_write(gb.pc + 1, 0xDE);
+    gb.mem_write(gb.pc + 2, 0xAD);
+    gb.set_z(1);
+    gb.jp_nz();
+    assert_eq!(gb.pc, 0x0000);
+    gb.set_z(0);
+    gb.jp_nz();
+    assert_eq!(gb.pc, 0xDEAD);
+}
+#[test]
+fn jp_nc_test() {
+    let mut gb = GB::new();
+    gb.pc = 0x0000;
+    gb.mem_write(gb.pc + 1, 0xDE);
+    gb.mem_write(gb.pc + 2, 0xAD);
+    gb.set_c(1);
+    gb.jp_nc();
+    assert_eq!(gb.pc, 0x0000);
+    gb.set_c(0);
+    gb.jp_nc();
+    assert_eq!(gb.pc, 0xDEAD);
+}
+#[test]
+fn jp_z_test() {
+    let mut gb = GB::new();
+    gb.pc = 0x0000;
+    gb.mem_write(gb.pc + 1, 0xDE);
+    gb.mem_write(gb.pc + 2, 0xAD);
+    gb.set_z(0);
+    gb.jp_z();
+    assert_eq!(gb.pc, 0x0000);
+    gb.set_z(1);
+    gb.jp_z();
+    assert_eq!(gb.pc, 0xDEAD);
+}
+#[test]
+fn jp_c_test() {
+    let mut gb = GB::new();
+    gb.pc = 0x0000;
+    gb.mem_write(gb.pc + 1, 0xDE);
+    gb.mem_write(gb.pc + 2, 0xAD);
+    gb.set_c(0);
+    gb.jp_c();
+    assert_eq!(gb.pc, 0x0000);
+    gb.set_c(1);
+    gb.jp_c();
+    assert_eq!(gb.pc, 0xDEAD);
+}
