@@ -2325,9 +2325,16 @@ fn jp_c_test() {
     assert_eq!(gb.pc, 0xDEAD);
 }
 #[test]
-fn jr_a8_test() {
+fn jr_a8_neg_test() {
     let mut gb = GB::new();
     gb.pc = 0x0000;
     gb.jr_a8(0xFF_u8 as i8);
     assert_eq!(gb.pc, 0xFFFF - 0x7E);
+}
+#[test]
+fn jr_a8_pos_test() {
+    let mut gb = GB::new();
+    gb.pc = 0xF000;
+    gb.jr_a8(0x1F_u8 as i8);
+    assert_eq!(gb.pc, 0xF01F);
 }
