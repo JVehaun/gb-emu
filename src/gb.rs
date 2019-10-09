@@ -721,6 +721,8 @@ impl GB {
             (0x20, val) => { self.jr_nc_a8(val as i8) }
             (0x28, val) => { self.jr_z_a8(val as i8) }
             (0x38, val) => { self.jr_c_a8(val as i8) }
+            // CALL a16
+            (0xCD, _) => { self.call_a16() }
 
 
             (_, _)  => { panic!("Unknown opcode") }
@@ -1494,6 +1496,15 @@ impl GB {
             return self.jr_a8(val);
         }
         return 12;
+    }
+    fn call_a16(&mut self) -> u32 {
+        let a16 = ((self.mem_read(self.pc + 1) as u16) << 8) | (self.mem_read(self.pc + 2) as u16);
+        self.mem_write(self.sp, (self.pc >> 8) as u8);
+        self.mem_write(self.sp-1, self.pc as u8);
+        self.sp = self.sp - 2;
+        self.pc = a16;
+
+        return 24;
     }
 }
 
@@ -2464,4 +2475,17 @@ fn jr_c_a8_test() {
     gb.set_cy(1);
     gb.jr_c_a8(0x1F_u8 as i8);
     assert_eq!(gb.pc, 0x1F);
+}
+#[test]
+fn call_a16_test() {
+    let mut gb = GB::new();
+    gb.pc = 0x1110;
+    gb.sp = 0xFFFE;
+    gb.mem_write(gb.pc + 1, 0xDE);
+    gb.mem_write(gb.pc + 2, 0xAD);
+    gb.call_a16();
+    assert_eq!(gb.pc, 0xDEAD);
+    assert_eq!(gb.sp, 0xFFFC);
+    assert_eq!(gb.mem_read(gb.sp+1), 0x10);
+    assert_eq!(gb.mem_read(gb.sp+2), 0x11);
 }
