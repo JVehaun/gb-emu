@@ -723,6 +723,11 @@ impl GB {
             (0x38, val) => { self.jr_c_a8(val as i8) }
             // CALL a16
             (0xCD, _) => { self.call_a16() }
+            // CALL cc, a16
+            (0xC4, _) => { self.call_nz_a16() }
+            (0xD4, _) => { self.call_nc_a16() }
+            (0xCC, _) => { self.call_z_a16() }
+            (0xDC, _) => { self.call_c_a16() }
 
 
             (_, _)  => { panic!("Unknown opcode") }
@@ -1505,6 +1510,30 @@ impl GB {
         self.pc = a16;
 
         return 24;
+    }
+    fn call_nz_a16(&mut self) -> u32 {
+        if self.get_z() == 0 {
+            return self.call_a16();
+        }
+        return 12;
+    }
+    fn call_nc_a16(&mut self) -> u32 {
+        if self.get_cy() == 0 {
+            return self.call_a16();
+        }
+        return 12;
+    }
+    fn call_z_a16(&mut self) -> u32 {
+        if self.get_z() == 1 {
+            return self.call_a16();
+        }
+        return 12;
+    }
+    fn call_c_a16(&mut self) -> u32 {
+        if self.get_cy() == 1 {
+            return self.call_a16();
+        }
+        return 12;
     }
 }
 
@@ -2484,6 +2513,74 @@ fn call_a16_test() {
     gb.mem_write(gb.pc + 1, 0xDE);
     gb.mem_write(gb.pc + 2, 0xAD);
     gb.call_a16();
+    assert_eq!(gb.pc, 0xDEAD);
+    assert_eq!(gb.sp, 0xFFFC);
+    assert_eq!(gb.mem_read(gb.sp+1), 0x10);
+    assert_eq!(gb.mem_read(gb.sp+2), 0x11);
+}
+#[test]
+fn call_nz_a16_test() {
+    let mut gb = GB::new();
+    gb.pc = 0x1110;
+    gb.sp = 0xFFFE;
+    gb.mem_write(gb.pc + 1, 0xDE);
+    gb.mem_write(gb.pc + 2, 0xAD);
+    gb.set_z(1);
+    gb.call_nz_a16();
+    assert_eq!(gb.pc, 0x1110);
+    gb.set_z(0);
+    gb.call_nz_a16();
+    assert_eq!(gb.pc, 0xDEAD);
+    assert_eq!(gb.sp, 0xFFFC);
+    assert_eq!(gb.mem_read(gb.sp+1), 0x10);
+    assert_eq!(gb.mem_read(gb.sp+2), 0x11);
+}
+#[test]
+fn call_nc_a16_test() {
+    let mut gb = GB::new();
+    gb.pc = 0x1110;
+    gb.sp = 0xFFFE;
+    gb.mem_write(gb.pc + 1, 0xDE);
+    gb.mem_write(gb.pc + 2, 0xAD);
+    gb.set_cy(1);
+    gb.call_nc_a16();
+    assert_eq!(gb.pc, 0x1110);
+    gb.set_cy(0);
+    gb.call_nc_a16();
+    assert_eq!(gb.pc, 0xDEAD);
+    assert_eq!(gb.sp, 0xFFFC);
+    assert_eq!(gb.mem_read(gb.sp+1), 0x10);
+    assert_eq!(gb.mem_read(gb.sp+2), 0x11);
+}
+#[test]
+fn call_z_a16_test() {
+    let mut gb = GB::new();
+    gb.pc = 0x1110;
+    gb.sp = 0xFFFE;
+    gb.mem_write(gb.pc + 1, 0xDE);
+    gb.mem_write(gb.pc + 2, 0xAD);
+    gb.set_z(0);
+    gb.call_z_a16();
+    assert_eq!(gb.pc, 0x1110);
+    gb.set_z(1);
+    gb.call_z_a16();
+    assert_eq!(gb.pc, 0xDEAD);
+    assert_eq!(gb.sp, 0xFFFC);
+    assert_eq!(gb.mem_read(gb.sp+1), 0x10);
+    assert_eq!(gb.mem_read(gb.sp+2), 0x11);
+}
+#[test]
+fn call_c_a16_test() {
+    let mut gb = GB::new();
+    gb.pc = 0x1110;
+    gb.sp = 0xFFFE;
+    gb.mem_write(gb.pc + 1, 0xDE);
+    gb.mem_write(gb.pc + 2, 0xAD);
+    gb.set_cy(0);
+    gb.call_c_a16();
+    assert_eq!(gb.pc, 0x1110);
+    gb.set_cy(1);
+    gb.call_c_a16();
     assert_eq!(gb.pc, 0xDEAD);
     assert_eq!(gb.sp, 0xFFFC);
     assert_eq!(gb.mem_read(gb.sp+1), 0x10);
