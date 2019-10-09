@@ -33,7 +33,7 @@ impl GB {
             bc: 0,
             de: 0,
             hl: 0,
-            sp: 0,
+            sp: 0xFFFE,
             pc: 0,
         }
     }
@@ -689,7 +689,7 @@ impl GB {
             (0x05, _) => { self.dec_r8(&GB::set_b, &GB::get_b) }
             (0x15, _) => { self.dec_r8(&GB::set_d, &GB::get_d) }
             (0x25, _) => { self.dec_r8(&GB::set_h, &GB::get_h) }
-            (0x35, _) => { panic!("Not yet implemented") }
+            (0x35, _) => { self.dec_r8_mem() }
             (0x0D, _) => { self.dec_r8(&GB::set_c, &GB::get_c) }
             (0x1D, _) => { self.dec_r8(&GB::set_e, &GB::get_e) }
             (0x2D, _) => { self.dec_r8(&GB::set_l, &GB::get_l) }
@@ -698,7 +698,7 @@ impl GB {
             (0x04, _) => { self.inc_r8(&GB::set_b, &GB::get_b) }
             (0x14, _) => { self.inc_r8(&GB::set_d, &GB::get_d) }
             (0x24, _) => { self.inc_r8(&GB::set_h, &GB::get_h) }
-            (0x34, _) => { panic!("Not yet implemented") }
+            (0x34, _) => { self.inc_r8_mem() }
             (0x0C, _) => { self.inc_r8(&GB::set_c, &GB::get_c) }
             (0x1C, _) => { self.inc_r8(&GB::set_e, &GB::get_e) }
             (0x2C, _) => { self.inc_r8(&GB::set_l, &GB::get_l) }
@@ -1002,17 +1002,17 @@ impl GB {
         // Calculate C
         let (_, c) = self.sp.overflowing_add(val as u16);
         if c {
-            self.set_c(1);
+            self.set_cy(1);
         } else {
-            self.set_c(0);
+            self.set_cy(0);
         }
 
         // Calculate H
         let (_, h) = (self.sp as u8).overflowing_add(val);
         if h {
-            self.set_h(1);
+            self.set_hc(1);
         } else {
-            self.set_h(0);
+            self.set_hc(0);
         }
 
         // Set remaining bits
@@ -1041,25 +1041,25 @@ impl GB {
     fn adc_r8(&mut self, val: u8) -> u32 {
         let a = self.get_a();
         let (mut result, _) = a.overflowing_add(val);
-        let (result, _) = result.overflowing_add(self.get_c());
+        let (result, _) = result.overflowing_add(self.get_cy());
         self.set_a(result);
 
         // Calculate C
         let (v1, c1) = a.overflowing_add(val);
-        let (_, c2) = v1.overflowing_add(self.get_c());
+        let (_, c2) = v1.overflowing_add(self.get_cy());
         if c1 || c2{
-            self.set_c(1);
+            self.set_cy(1);
         } else {
-            self.set_c(0);
+            self.set_cy(0);
         }
 
         // Calculate H
         let (v1, h1) = (a << 4).overflowing_add(val << 4);
-        let (_, h2) = v1.overflowing_add(self.get_c() << 4);
+        let (_, h2) = v1.overflowing_add(self.get_cy() << 4);
         if h1 || h2 {
-            self.set_h(1);
+            self.set_hc(1);
         } else {
-            self.set_h(0);
+            self.set_hc(0);
         }
 
         // Calculate Z
@@ -1082,17 +1082,17 @@ impl GB {
         // Calculate C
         let (_, c) = a.overflowing_add(val);
         if c {
-            self.set_c(1);
+            self.set_cy(1);
         } else {
-            self.set_c(0);
+            self.set_cy(0);
         }
 
         // Calculate H
         let (_, h) = (a << 4).overflowing_add(val << 4);
         if h {
-            self.set_h(1);
+            self.set_hc(1);
         } else {
-            self.set_h(0);
+            self.set_hc(0);
         }
 
         // Calculate Z
@@ -1113,10 +1113,10 @@ impl GB {
         self.set_a(result);
 
         // Set C
-        self.set_c(0);
+        self.set_cy(0);
 
         // Set H
-        self.set_h(0);
+        self.set_hc(0);
 
         // Calculate Z
         if result == 0 {
@@ -1133,24 +1133,24 @@ impl GB {
     fn cp_r8(&mut self, val: u8) -> u32 {
         let a = self.get_a();
         let (mut result, _) = a.overflowing_sub(val);
-        let (result, _) = result.overflowing_sub(self.get_c());
+        let (result, _) = result.overflowing_sub(self.get_cy());
 
         // Calculate C
         let (v1, c1) = a.overflowing_sub(val);
-        let (_, c2) = v1.overflowing_sub(self.get_c());
+        let (_, c2) = v1.overflowing_sub(self.get_cy());
         if c1 || c2{
-            self.set_c(1);
+            self.set_cy(1);
         } else {
-            self.set_c(0);
+            self.set_cy(0);
         }
 
         // Calculate H
         let (v1, h1) = (a << 4).overflowing_sub(val << 4);
-        let (_, h2) = v1.overflowing_sub(self.get_c() << 4);
+        let (_, h2) = v1.overflowing_sub(self.get_cy() << 4);
         if h1 || h2 {
-            self.set_h(1);
+            self.set_hc(1);
         } else {
-            self.set_h(0);
+            self.set_hc(0);
         }
 
         // Calculate Z
@@ -1171,10 +1171,10 @@ impl GB {
         self.set_a(result);
 
         // Set C
-        self.set_c(0);
+        self.set_cy(0);
 
         // Set H
-        self.set_h(0);
+        self.set_hc(0);
 
         // Calculate Z
         if result == 0 {
@@ -1190,25 +1190,25 @@ impl GB {
     fn sbc_r8(&mut self, val: u8) -> u32 {
         let a = self.get_a();
         let (mut result, _) = a.overflowing_sub(val);
-        let (result, _) = result.overflowing_sub(self.get_c());
+        let (result, _) = result.overflowing_sub(self.get_cy());
         self.set_a(result);
 
         // Calculate C
         let (v1, c1) = a.overflowing_sub(val);
-        let (_, c2) = v1.overflowing_sub(self.get_c());
+        let (_, c2) = v1.overflowing_sub(self.get_cy());
         if c1 || c2{
-            self.set_c(1);
+            self.set_cy(1);
         } else {
-            self.set_c(0);
+            self.set_cy(0);
         }
 
         // Calculate H
         let (v1, h1) = (a << 4).overflowing_sub(val << 4);
-        let (_, h2) = v1.overflowing_sub(self.get_c() << 4);
+        let (_, h2) = v1.overflowing_sub(self.get_cy() << 4);
         if h1 || h2 {
-            self.set_h(1);
+            self.set_hc(1);
         } else {
-            self.set_h(0);
+            self.set_hc(0);
         }
 
         // Calculate Z
@@ -1231,17 +1231,17 @@ impl GB {
         // Calculate C
         let (_, c) = a.overflowing_sub(val);
         if c {
-            self.set_c(1);
+            self.set_cy(1);
         } else {
-            self.set_c(0);
+            self.set_cy(0);
         }
 
         // Calculate H
         let (_, h) = (a << 4).overflowing_sub(val << 4);
         if h {
-            self.set_h(1);
+            self.set_hc(1);
         } else {
-            self.set_h(0);
+            self.set_hc(0);
         }
 
         // Calculate Z
@@ -1262,10 +1262,10 @@ impl GB {
         self.set_a(result);
 
         // Set C
-        self.set_c(0);
+        self.set_cy(0);
 
         // Set H
-        self.set_h(0);
+        self.set_hc(0);
 
         // Calculate Z
         if result == 0 {
@@ -1278,7 +1278,6 @@ impl GB {
         self.set_n(0);
         return 4;
     }
-
     fn dec_r8(&mut self, setter: &Fn(&mut GB, u8), getter: &Fn(&mut GB) -> u8) -> u32 {
         let mut val = getter(self);
         let (result, _) = val.overflowing_sub(1);
@@ -1293,9 +1292,36 @@ impl GB {
 
         // Calculate H
         if (val << 4) == 0 {
-            self.set_h(0);
+            self.set_hc(0);
         } else {
-            self.set_h(1);
+            self.set_hc(1);
+        }
+
+        // Set N
+        self.set_n(1);
+
+        return 4;
+    }
+    fn dec_r8_mem(&mut self) -> u32 {
+        let mut val = self.mem_read(self.hl);
+        let (result, _) = val.overflowing_sub(1);
+        self.mem_write(self.hl, result);
+        println!("HL: {:#X}", self.hl);
+        println!("Val: {:#X}", val);
+        println!("Result: {:#X}", result);
+
+        // Calculate Z
+        if result == 0 {
+            self.set_z(0);
+        } else {
+            self.set_z(1);
+        }
+
+        // Calculate H
+        if (val << 4) == 0 {
+            self.set_hc(0);
+        } else {
+            self.set_hc(1);
         }
 
         // Set N
@@ -1337,9 +1363,36 @@ impl GB {
 
         // Calculate H
         if (val << 4) == 0 {
-            self.set_h(0);
+            self.set_hc(0);
         } else {
-            self.set_h(1);
+            self.set_hc(1);
+        }
+
+        // Set N
+        self.set_n(1);
+
+        return 4;
+    }
+    fn inc_r8_mem(&mut self) -> u32 {
+        let mut val = self.mem_read(self.hl);
+        let (result, _) = val.overflowing_add(1);
+        self.mem_write(self.hl, result);
+        println!("HL: {:#X}", self.hl);
+        println!("Val: {:#X}", val);
+        println!("Result: {:#X}", result);
+
+        // Calculate Z
+        if result == 0 {
+            self.set_z(0);
+        } else {
+            self.set_z(1);
+        }
+
+        // Calculate H
+        if (val << 4) == 0 {
+            self.set_hc(0);
+        } else {
+            self.set_hc(1);
         }
 
         // Set N
@@ -1391,7 +1444,7 @@ impl GB {
         return 12;
     }
     fn jp_nc(&mut self) -> u32 {
-        if self.get_c() == 0 {
+        if self.get_cy() == 0 {
             return self.jp_a16();
         }
         return 12;
@@ -1403,7 +1456,7 @@ impl GB {
         return 12;
     }
     fn jp_c(&mut self) -> u32 {
-        if self.get_c() == 1 {
+        if self.get_cy() == 1 {
             return self.jp_a16();
         }
         return 12;
@@ -1425,7 +1478,7 @@ impl GB {
         return 12;
     }
     fn jr_nc_a8(&mut self, val: i8) -> u32 {
-        if self.get_c() == 0 {
+        if self.get_cy() == 0 {
             return self.jr_a8(val);
         }
         return 12;
@@ -1437,7 +1490,7 @@ impl GB {
         return 12;
     }
     fn jr_c_a8(&mut self, val: i8) -> u32 {
-        if self.get_c() == 1 {
+        if self.get_cy() == 1 {
             return self.jr_a8(val);
         }
         return 12;
@@ -2153,91 +2206,109 @@ fn ld_a_mem_a16_test() {
 fn adc_r8_test() {
     let mut gb = GB::new();
     gb.set_a(0xF0);
-    gb.set_c(0x1);
+    gb.set_cy(0x1);
     gb.adc_r8(0x0F);
     assert_eq!(gb.get_a(), 0x00);
-    assert_eq!(gb.get_c(), 0x01);
+    assert_eq!(gb.get_cy(), 0x01);
 }
 #[test]
 fn add_r8_test() {
     let mut gb = GB::new();
     gb.set_a(0xF0);
-    gb.set_c(0x1);
+    gb.set_cy(0x1);
     gb.add_r8(0x0F);
     assert_eq!(gb.get_a(), 0xFF);
-    assert_eq!(gb.get_c(), 0x00);
+    assert_eq!(gb.get_cy(), 0x00);
 }
 #[test]
 fn and_r8_test() {
     let mut gb = GB::new();
     gb.set_a(0b10011001);
-    gb.set_c(0x1);
+    gb.set_cy(0x1);
     gb.and_r8(0b11110000);
     assert_eq!(gb.get_a(), 0b10010000);
-    assert_eq!(gb.get_c(), 0x00);
+    assert_eq!(gb.get_cy(), 0x00);
 }
 #[test]
 fn cp_r8_test() {
     let mut gb = GB::new();
     gb.set_a(0xF0);
-    gb.set_c(0x1);
+    gb.set_cy(0x1);
     gb.cp_r8(0x0F);
     assert_eq!(gb.get_a(), 0xF0);
-    assert_eq!(gb.get_c(), 0x00);
+    assert_eq!(gb.get_cy(), 0x00);
 }
 #[test]
 fn or_r8_test() {
     let mut gb = GB::new();
     gb.set_a(0b10011001);
-    gb.set_c(0x1);
+    gb.set_cy(0x1);
     gb.or_r8(0b11110000);
     assert_eq!(gb.get_a(), 0b11111001);
-    assert_eq!(gb.get_c(), 0x00);
+    assert_eq!(gb.get_cy(), 0x00);
 }
 #[test]
 fn sbc_r8_test() {
     let mut gb = GB::new();
     gb.set_a(0xF0);
-    gb.set_c(0x1);
+    gb.set_cy(0x1);
     gb.sbc_r8(0x0F);
     assert_eq!(gb.get_a(), 0xE0);
-    assert_eq!(gb.get_c(), 0x00);
+    assert_eq!(gb.get_cy(), 0x00);
 }
 #[test]
 fn sub_r8_test() {
     let mut gb = GB::new();
     gb.set_a(0xF0);
-    gb.set_c(0x1);
+    gb.set_cy(0x1);
     gb.sub_r8(0x0F);
     assert_eq!(gb.get_a(), 0xE1);
-    assert_eq!(gb.get_c(), 0x00);
+    assert_eq!(gb.get_cy(), 0x00);
 }
 #[test]
 fn xor_r8_test() {
     let mut gb = GB::new();
     gb.set_a(0b10011001);
-    gb.set_c(0x1);
+    gb.set_cy(0x1);
     gb.xor_r8(0b11110000);
     assert_eq!(gb.get_a(), 0b01101001);
-    assert_eq!(gb.get_c(), 0x00);
+    assert_eq!(gb.get_cy(), 0x00);
 }
 #[test]
 fn dec_r8_test() {
     let mut gb = GB::new();
     gb.set_b(0x10);
-    gb.set_h(1);
+    gb.set_hc(1);
     gb.dec_r8(&GB::set_b, &GB::get_b);
     assert_eq!(gb.get_b(), 0x0F);
-    assert_eq!(gb.get_h(), 0x00);
+    assert_eq!(gb.get_hc(), 0x00);
 }
 #[test]
 fn inc_r8_test() {
     let mut gb = GB::new();
     gb.set_b(0x0F);
-    gb.set_h(0);
+    gb.set_hc(0);
     gb.inc_r8(&GB::set_b, &GB::get_b);
     assert_eq!(gb.get_b(), 0x10);
-    assert_eq!(gb.get_h(), 0x01);
+    assert_eq!(gb.get_hc(), 0x01);
+}
+#[test]
+fn dec_r8_mem_test() {
+    let mut gb = GB::new();
+    gb.mem_write(gb.hl, 0x10);
+    gb.set_hc(1);
+    gb.dec_r8_mem();
+    assert_eq!(gb.mem_read(gb.hl), 0x0F);
+    assert_eq!(gb.get_hc(), 0x00);
+}
+#[test]
+fn inc_r8_mem_test() {
+    let mut gb = GB::new();
+    gb.mem_write(gb.hl, 0x0F);
+    gb.set_hc(0);
+    gb.inc_r8_mem();
+    assert_eq!(gb.mem_read(gb.hl), 0x10);
+    assert_eq!(gb.get_hc(), 0x01);
 }
 #[test]
 fn dec_bc_test() {
@@ -2303,10 +2374,10 @@ fn jp_nc_test() {
     gb.pc = 0x0000;
     gb.mem_write(gb.pc + 1, 0xDE);
     gb.mem_write(gb.pc + 2, 0xAD);
-    gb.set_c(1);
+    gb.set_cy(1);
     gb.jp_nc();
     assert_eq!(gb.pc, 0x0000);
-    gb.set_c(0);
+    gb.set_cy(0);
     gb.jp_nc();
     assert_eq!(gb.pc, 0xDEAD);
 }
@@ -2329,10 +2400,10 @@ fn jp_c_test() {
     gb.pc = 0x0000;
     gb.mem_write(gb.pc + 1, 0xDE);
     gb.mem_write(gb.pc + 2, 0xAD);
-    gb.set_c(0);
+    gb.set_cy(0);
     gb.jp_c();
     assert_eq!(gb.pc, 0x0000);
-    gb.set_c(1);
+    gb.set_cy(1);
     gb.jp_c();
     assert_eq!(gb.pc, 0xDEAD);
 }
@@ -2365,10 +2436,10 @@ fn jr_nz_a8_test() {
 fn jr_nc_a8_test() {
     let mut gb = GB::new();
     gb.pc = 0x0000;
-    gb.set_c(1);
+    gb.set_cy(1);
     gb.jr_nc_a8(0x1F_u8 as i8);
     assert_eq!(gb.pc, 0x0000);
-    gb.set_c(0);
+    gb.set_cy(0);
     gb.jr_nc_a8(0x1F_u8 as i8);
     assert_eq!(gb.pc, 0x1F);
 }
@@ -2387,10 +2458,10 @@ fn jr_z_a8_test() {
 fn jr_c_a8_test() {
     let mut gb = GB::new();
     gb.pc = 0x0000;
-    gb.set_c(0);
+    gb.set_cy(0);
     gb.jr_c_a8(0x1F_u8 as i8);
     assert_eq!(gb.pc, 0x0000);
-    gb.set_c(1);
+    gb.set_cy(1);
     gb.jr_c_a8(0x1F_u8 as i8);
     assert_eq!(gb.pc, 0x1F);
 }
