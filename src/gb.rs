@@ -1419,15 +1419,27 @@ impl GB {
         return 16;
     }
     fn jr_nz_a8(&mut self, val: i8) -> u32 {
+        if self.get_z() == 0 {
+            return self.jr_a8(val);
+        }
         return 12;
     }
     fn jr_nc_a8(&mut self, val: i8) -> u32 {
+        if self.get_c() == 0 {
+            return self.jr_a8(val);
+        }
         return 12;
     }
     fn jr_z_a8(&mut self, val: i8) -> u32 {
+        if self.get_z() == 1 {
+            return self.jr_a8(val);
+        }
         return 12;
     }
     fn jr_c_a8(&mut self, val: i8) -> u32 {
+        if self.get_c() == 1 {
+            return self.jr_a8(val);
+        }
         return 12;
     }
 }
@@ -2337,4 +2349,48 @@ fn jr_a8_pos_test() {
     gb.pc = 0xF000;
     gb.jr_a8(0x1F_u8 as i8);
     assert_eq!(gb.pc, 0xF01F);
+}
+#[test]
+fn jr_nz_a8_test() {
+    let mut gb = GB::new();
+    gb.pc = 0x0000;
+    gb.set_z(1);
+    gb.jr_nz_a8(0x1F_u8 as i8);
+    assert_eq!(gb.pc, 0x0000);
+    gb.set_z(0);
+    gb.jr_nz_a8(0x1F_u8 as i8);
+    assert_eq!(gb.pc, 0x1F);
+}
+#[test]
+fn jr_nc_a8_test() {
+    let mut gb = GB::new();
+    gb.pc = 0x0000;
+    gb.set_c(1);
+    gb.jr_nc_a8(0x1F_u8 as i8);
+    assert_eq!(gb.pc, 0x0000);
+    gb.set_c(0);
+    gb.jr_nc_a8(0x1F_u8 as i8);
+    assert_eq!(gb.pc, 0x1F);
+}
+#[test]
+fn jr_z_a8_test() {
+    let mut gb = GB::new();
+    gb.pc = 0x0000;
+    gb.set_z(0);
+    gb.jr_z_a8(0x1F_u8 as i8);
+    assert_eq!(gb.pc, 0x0000);
+    gb.set_z(1);
+    gb.jr_z_a8(0x1F_u8 as i8);
+    assert_eq!(gb.pc, 0x1F);
+}
+#[test]
+fn jr_c_a8_test() {
+    let mut gb = GB::new();
+    gb.pc = 0x0000;
+    gb.set_c(0);
+    gb.jr_c_a8(0x1F_u8 as i8);
+    assert_eq!(gb.pc, 0x0000);
+    gb.set_c(1);
+    gb.jr_c_a8(0x1F_u8 as i8);
+    assert_eq!(gb.pc, 0x1F);
 }
