@@ -714,6 +714,13 @@ impl GB {
             (0xD2, _) => { self.jp_nc() }
             (0xCA, _) => { self.jp_z() }
             (0xDA, _) => { self.jp_c() }
+            // JR a8
+            (0x18, val) => { self.jr_a8(val as i8) }
+            // JR cc, a8
+            (0x18, val) => { self.jr_nz_a8(val as i8) }
+            (0x20, val) => { self.jr_nc_a8(val as i8) }
+            (0x28, val) => { self.jr_z_a8(val as i8) }
+            (0x38, val) => { self.jr_c_a8(val as i8) }
 
 
             (_, _)  => { panic!("Unknown opcode") }
@@ -1399,6 +1406,28 @@ impl GB {
         if self.get_c() == 1 {
             return self.jp_a16();
         }
+        return 12;
+    }
+    fn jr_a8(&mut self, val: i8) -> u32 {
+        if val >= 0 {
+            let (result, _) = self.pc.overflowing_add(val as u16);
+            self.pc = result;
+        } else {
+            let (result, _) = self.pc.overflowing_sub((val & 0x7F) as u16);
+            self.pc = result;
+        }
+        return 16;
+    }
+    fn jr_nz_a8(&mut self, val: i8) -> u32 {
+        return 12;
+    }
+    fn jr_nc_a8(&mut self, val: i8) -> u32 {
+        return 12;
+    }
+    fn jr_z_a8(&mut self, val: i8) -> u32 {
+        return 12;
+    }
+    fn jr_c_a8(&mut self, val: i8) -> u32 {
         return 12;
     }
 }
@@ -2294,4 +2323,11 @@ fn jp_c_test() {
     gb.set_c(1);
     gb.jp_c();
     assert_eq!(gb.pc, 0xDEAD);
+}
+#[test]
+fn jr_a8_test() {
+    let mut gb = GB::new();
+    gb.pc = 0x0000;
+    gb.jr_a8(0xFF_u8 as i8);
+    assert_eq!(gb.pc, 0xFFFF - 0x7E);
 }
