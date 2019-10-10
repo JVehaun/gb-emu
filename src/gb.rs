@@ -728,6 +728,8 @@ impl GB {
             (0xD4, _) => { self.call_nc_a16() }
             (0xCC, _) => { self.call_z_a16() }
             (0xDC, _) => { self.call_c_a16() }
+            // RET a16
+            (0xDC, _) => { self.call_c_a16() }
 
 
             (_, _)  => { panic!("Unknown opcode") }
@@ -1534,6 +1536,14 @@ impl GB {
             return self.call_a16();
         }
         return 12;
+    }
+
+    fn ret_a16(&mut self) -> u32 {
+        let lsb = self.mem_read(self.sp);
+        let msb = self.mem_read(self.sp + 1);
+        self.sp = self.sp + 2;
+        self.pc = ((msb as u16) << 8) | (lsb as u16);
+        return 16;
     }
 }
 
@@ -2586,3 +2596,15 @@ fn call_c_a16_test() {
     assert_eq!(gb.mem_read(gb.sp+1), 0x10);
     assert_eq!(gb.mem_read(gb.sp+2), 0x11);
 }
+#[test]
+fn ret_a16_test() {
+    let mut gb = GB::new();
+    gb.pc = 0x1110;
+    gb.sp = 0xFFFC;
+    gb.mem_write(gb.sp + 1, 0xDE);
+    gb.mem_write(gb.sp + 0, 0xAD);
+    gb.ret_a16();
+    assert_eq!(gb.pc, 0xDEAD);
+    assert_eq!(gb.sp, 0xFFFE);
+}
+
