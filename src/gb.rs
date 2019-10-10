@@ -737,6 +737,11 @@ impl GB {
             (0xC8, _) => { self.ret_c_a16() }
             // RETI a16
             (0xD9, _) => { self.reti_a16() }
+            // PUSH r16
+            (0xC5, _) => { self.push_r16(self.bc) }
+            (0xD5, _) => { self.push_r16(self.de) }
+            (0xE5, _) => { self.push_r16(self.hl) }
+            (0xF5, _) => { self.push_r16(self.af) }
 
 
             (_, _)  => { panic!("Unknown opcode") }
@@ -1581,6 +1586,15 @@ impl GB {
         return self.ret_a16();
         return 16;
     }
+    fn push_r16(&mut self, val: u16) -> u32 {
+        let lsb = val as u8;
+        let msb = (val >> 8) as u8;
+        self.mem_write(self.sp, msb);
+        self.mem_write(self.sp-1, lsb);
+        self.sp = self.sp - 2;
+        return 16;
+    }
+
 }
 
 
@@ -2715,4 +2729,14 @@ fn reti_a16_test() {
     gb.ime = 0;
     gb.reti_a16();
     assert_eq!(gb.ime, 1);
+}
+#[test]
+fn push_a16_test() {
+    let mut gb = GB::new();
+    gb.bc = 0x1110;
+    gb.sp = 0xFFFC;
+    gb.ime = 0;
+    gb.push_r16(gb.bc);
+    assert_eq!(gb.mem_read(gb.sp+1), 0x10);
+    assert_eq!(gb.mem_read(gb.sp+2), 0x11);
 }
