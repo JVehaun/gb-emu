@@ -742,7 +742,15 @@ impl GB {
             (0xD5, _) => { self.push_r16(self.de) }
             (0xE5, _) => { self.push_r16(self.hl) }
             (0xF5, _) => { self.push_r16(self.af) }
-
+            // RST n
+            (0xC7, _) => { self.rst_n8(0x00) }
+            (0xD7, _) => { self.rst_n8(0x10) }
+            (0xE7, _) => { self.rst_n8(0x20) }
+            (0xF7, _) => { self.rst_n8(0x30) }
+            (0xCF, _) => { self.rst_n8(0x08) }
+            (0xDF, _) => { self.rst_n8(0x18) }
+            (0xEF, _) => { self.rst_n8(0x28) }
+            (0xFF, _) => { self.rst_n8(0x38) }
 
             (_, _)  => { panic!("Unknown opcode") }
         }
@@ -1592,6 +1600,10 @@ impl GB {
         self.mem_write(self.sp, msb);
         self.mem_write(self.sp-1, lsb);
         self.sp = self.sp - 2;
+        return 16;
+    }
+    fn rst_n8(&mut self, val: u8) -> u32 {
+        self.pc = val as u16;
         return 16;
     }
 
@@ -2739,4 +2751,11 @@ fn push_a16_test() {
     gb.push_r16(gb.bc);
     assert_eq!(gb.mem_read(gb.sp+1), 0x10);
     assert_eq!(gb.mem_read(gb.sp+2), 0x11);
+}
+#[test]
+fn rst_n8_test() {
+    let mut gb = GB::new();
+    gb.pc = 0xFFFF;
+    gb.rst_n8(0x10);
+    assert_eq!(gb.pc, 0x10);
 }
