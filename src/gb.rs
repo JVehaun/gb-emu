@@ -7,7 +7,7 @@ pub struct GB {
     cart: Cartridge,
     regs: [u8; 0x80],
     oam: [u8; 0xA0],
-    ei: u8,
+    ime: u8,
     stack: [u8; 0x180],
 
     af: u16,
@@ -26,7 +26,7 @@ impl GB {
             cart: Cartridge::new(),
             regs: [0; 0x80],
             oam: [0; 0xA0],
-            ei: 0,
+            ime: 0,
             stack: [0; 0x180],
 
             af: 0,
@@ -98,7 +98,7 @@ impl GB {
         } else if addr >= 0xFF80 && addr <= 0xFFFE { // High RAM (Stack)
             self.stack[(addr - 0xFF80) as usize] = val;
         } else if addr == 0xFFFF { // Interrupt Enable
-            self.ei = val;
+            self.ime = val;
         }
     }
 
@@ -122,7 +122,7 @@ impl GB {
         } else if addr >= 0xFF80 && addr <= 0xFFFE { // High RAM (Stack)
             return self.stack[(addr - 0xFF80) as usize];
         } else if addr == 0xFFFF { // Interrupt Enable
-            return self.ei;
+            return self.ime; //TODO: This might not be correct
         }
         return 0;
     }
@@ -729,12 +729,14 @@ impl GB {
             (0xCC, _) => { self.call_z_a16() }
             (0xDC, _) => { self.call_c_a16() }
             // RET a16
-            (0xDC, _) => { self.ret_a16() }
+            (0xC9, _) => { self.ret_a16() }
             // RET cc, a16
             (0xC0, _) => { self.ret_nz_a16() }
             (0xD0, _) => { self.ret_nc_a16() }
             (0xC8, _) => { self.ret_z_a16() }
             (0xC8, _) => { self.ret_c_a16() }
+            // RETI a16
+            (0xD9, _) => { self.reti_a16() }
 
 
             (_, _)  => { panic!("Unknown opcode") }
@@ -1435,11 +1437,11 @@ impl GB {
         return 8;
     }
     fn ei(&mut self) -> u32 {
-        self.ei = 1;
+        self.ime = 1;
         return 4;
     }
     fn di(&mut self) -> u32 {
-        self.ei = 0;
+        self.ime = 0;
         return 4;
     }
     fn jp_a16(&mut self) -> u32 {
@@ -1573,6 +1575,11 @@ impl GB {
             return self.ret_a16();
         }
         return 12;
+    }
+    fn reti_a16(&mut self) -> u32 {
+        self.ime = 1;
+        return self.ret_a16();
+        return 16;
     }
 }
 
@@ -2406,16 +2413,16 @@ fn inc_bc_test() {
 #[test]
 fn ei_test() {
     let mut gb = GB::new();
-    gb.ei = 0;
+    gb.ime = 0;
     gb.ei();
-    assert_eq!(gb.ei, 1);
+    assert_eq!(gb.ime, 1);
 }
 #[test]
 fn di_test() {
     let mut gb = GB::new();
-    gb.ei = 1;
+    gb.ime = 1;
     gb.di();
-    assert_eq!(gb.ei, 0);
+    assert_eq!(gb.ime, 0);
 }
 #[test]
 fn jp_a16_test() {
@@ -2700,4 +2707,12 @@ fn ret_c_a16_test() {
     assert_eq!(gb.pc, 0xDEAD);
     assert_eq!(gb.sp, 0xFFFE);
 }
-
+#[test]
+fn reti_a16_test() {
+    let mut gb = GB::new();
+    gb.pc = 0x1110;
+    gb.sp = 0xFFFC;
+    gb.ime = 0;
+    gb.reti_a16();
+    assert_eq!(gb.ime, 1);
+}
