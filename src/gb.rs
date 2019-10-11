@@ -762,12 +762,17 @@ impl GB {
             (0xD1, _) => { self.pop_de() }
             (0xE1, _) => { self.pop_hl() }
             (0xF1, _) => { self.pop_af() }
-
-            // 
+            // Shift A stuff
             (0x07, _) => { GB::shift_a(self, &GB::rlc) }
             (0x0F, _) => { GB::shift_a(self, &GB::rrc) }
             (0x17, _) => { GB::shift_a(self, &GB::rl) }
             (0x1F, _) => { GB::shift_a(self, &GB::rr) }
+            // Random stuff
+            (0x27, _) => { self.daa() }
+            (0x37, _) => { self.scf() }
+            (0x2F, _) => { self.cpl() }
+            (0x3F, _) => { self.ccf() }
+
 
             (_, _)  => { panic!("Unknown opcode") }
         }
@@ -1779,6 +1784,28 @@ impl GB {
         self.sp = self.sp + 2;
         self.af = (msb << 8) | lsb;
         return 12;
+    }
+    fn daa(&mut self) {
+        return 4
+    }
+    fn scf(&mut self) {
+        self.set_cy(1);
+        self.set_n(0);
+        self.set_hc(0);
+        return 4
+    }
+    fn cpl(&mut self) {
+        return 4
+    }
+    fn ccf(&mut self) {
+        if self.get_cy() == 0 {
+            self.set_cy(1);
+        } else {
+            self.set_cy(0);
+        }
+        self.set_n(0);
+        self.set_hc(0);
+        return 4
     }
 
 }
