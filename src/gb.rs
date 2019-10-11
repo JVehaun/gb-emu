@@ -767,6 +767,7 @@ impl GB {
             (0x0F, _) => { GB::shift_a(self, &GB::rrc) }
             (0x17, _) => { GB::shift_a(self, &GB::rl) }
             (0x1F, _) => { GB::shift_a(self, &GB::rr) }
+            (0xF1, _) => { self.pop_af() }
             // Random stuff
             (0x27, _) => { self.daa() }
             (0x37, _) => { self.scf() }
@@ -1785,19 +1786,21 @@ impl GB {
         self.af = (msb << 8) | lsb;
         return 12;
     }
-    fn daa(&mut self) {
-        return 4
+    fn daa(&mut self) -> u32 {
+        return 4;
     }
-    fn scf(&mut self) {
+    fn scf(&mut self) -> u32 {
         self.set_cy(1);
         self.set_n(0);
         self.set_hc(0);
-        return 4
+        return 4;
     }
-    fn cpl(&mut self) {
-        return 4
+    fn cpl(&mut self) -> u32 {
+        let a = self.get_a();
+        self.set_a(!a);
+        return 4;
     }
-    fn ccf(&mut self) {
+    fn ccf(&mut self) -> u32 {
         if self.get_cy() == 0 {
             self.set_cy(1);
         } else {
@@ -1805,9 +1808,8 @@ impl GB {
         }
         self.set_n(0);
         self.set_hc(0);
-        return 4
+        return 4;
     }
-
 }
 
 
@@ -2976,4 +2978,11 @@ fn rst_n8_test() {
     gb.pc = 0xFFFF;
     gb.rst_n8(0x10);
     assert_eq!(gb.pc, 0x10);
+}
+#[test]
+fn cpl_test() {
+    let mut gb = GB::new();
+    gb.set_a(0b11001010);
+    gb.cpl();
+    assert_eq!(gb.get_a(), 0b00110101);
 }
