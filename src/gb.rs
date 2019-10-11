@@ -763,6 +763,12 @@ impl GB {
             (0xE1, _) => { self.pop_hl() }
             (0xF1, _) => { self.pop_af() }
 
+            // 
+            (0x07, _) => { GB::shift_a(self, &GB::rlc) }
+            (0x0F, _) => { GB::shift_a(self, &GB::rrc) }
+            (0x17, _) => { GB::shift_a(self, &GB::rl) }
+            (0x1F, _) => { GB::shift_a(self, &GB::rr) }
+
             (_, _)  => { panic!("Unknown opcode") }
         }
     }
