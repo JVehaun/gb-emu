@@ -788,6 +788,7 @@ impl GB {
         let mut r = getter(self);
         r = f(self, r);
         setter(self, r);
+        self.pc = self.pc + 2;
         return 8;
     }
     pub fn shift_mem(&mut self, f: &Fn(&mut GB, u8) -> u8) -> u32 {
@@ -795,6 +796,7 @@ impl GB {
         let mut r = self.mem_read(addr);
         r = f(self, r);
         self.mem_write(addr, r);
+        self.pc = self.pc + 2;
         return 16;
     }
 
@@ -914,26 +916,31 @@ impl GB {
     fn ld_bc_d16(&mut self) -> u32 {
         let d16 = ((self.mem_read(self.pc + 1) as u16) << 8) | (self.mem_read(self.pc + 2) as u16);
         self.bc = d16;
+        self.pc = self.pc + 3;
         return 12;
     }
     fn ld_de_d16(&mut self) -> u32 {
         let d16 = ((self.mem_read(self.pc + 1) as u16) << 8) | (self.mem_read(self.pc + 2) as u16);
         self.de = d16;
+        self.pc = self.pc + 3;
         return 12;
     }
     fn ld_hl_d16(&mut self) -> u32 {
         let d16 = ((self.mem_read(self.pc + 1) as u16) << 8) | (self.mem_read(self.pc + 2) as u16);
         self.hl = d16;
+        self.pc = self.pc + 3;
         return 12;
     }
     fn ld_sp_d16(&mut self) -> u32 {
         let d16 = ((self.mem_read(self.pc + 1) as u16) << 8) | (self.mem_read(self.pc + 2) as u16);
         self.sp = d16;
+        self.pc = self.pc + 3;
         return 12;
     }
     fn ld_r16_mem(&mut self, addr: u16) -> u32 {
         let a = self.get_a();
         self.mem_write(addr, a);
+        self.pc = self.pc + 1;
         return 8;
     }
     fn ld_hl_mem_inc(&mut self) -> u32 {
@@ -941,6 +948,7 @@ impl GB {
         let a = self.get_a();
         self.mem_write(hl, a);
         self.hl += 1;
+        self.pc += 1;
         return 8;
     }
     fn ld_hl_mem_dec(&mut self) -> u32 {
@@ -948,31 +956,39 @@ impl GB {
         let a = self.get_a();
         self.mem_write(hl, a);
         self.hl -= 1;
+        self.pc += 1;
         return 8;
     }
     fn ld_r8_r8(&mut self, setter: &Fn(&mut GB, u8), getter: &Fn(&mut GB) -> u8) -> u32 {
         let val = getter(self);
         setter(self, val);
+        self.pc += 1;
         return 4;
     }
     fn ld_mem_r16_r8(&mut self, dest_addr: u16, src_getter: &Fn(&mut GB) -> u8) -> u32 {
         let val = src_getter(self);
         self.mem_write(dest_addr, val);
+        self.pc += 1;
         return 8;
     }
     fn ld_r8_mem_r16(&mut self, dest_setter: &Fn(&mut GB, u8), src_addr: u16) -> u32 {
         let val = self.mem_read(src_addr);
         dest_setter(self, val);
+        self.pc += 1;
         return 8;
     }
     fn ld_r8_d8(&mut self, setter: &Fn(&mut GB, u8), val: u8) -> u32 {
         setter(self, val);
+        self.pc += 2;
         return 8;
     }
     fn ld_mem_r16_d8(&mut self, dest_addr: u16, val: u8) -> u32 {
         self.mem_write(dest_addr, val);
+        self.pc += 2;
         return 8;
     }
+
+    // TODO: Maybe an issue
     fn ld_mem_a16_r16(&mut self, dest_addr: u16, val: u16) -> u32 {
         self.mem_write(dest_addr, (val & 0xFF) as u8);
         self.mem_write(dest_addr+1, ((val >> 8) & 0xFF) as u8);
@@ -982,24 +998,28 @@ impl GB {
         let val = self.mem_read(self.hl);
         self.set_a(val);
         self.hl += 1;
+        self.pc += 1;
         return 8;
     }
     fn ld_a_mem_hl_dec(&mut self) -> u32 {
         let val = self.mem_read(self.hl);
         self.set_a(val);
         self.hl -= 1;
+        self.pc += 1;
         return 8;
     }
     fn ldh_mem_a8_r8(&mut self, dest_addr: u8, getter: &Fn(&mut GB) -> u8) -> u32 {
         let val = getter(self);
         let dest = (dest_addr as u16)| 0xFF00;
         self.mem_write(dest, val);
+        self.pc += 2;
         return 12;
     }
     fn ldh_r8_mem_a8(&mut self, setter: &Fn(&mut GB, u8), src_addr: u8) -> u32 {
         let src = (src_addr as u16)| 0xFF00;
         let val = self.mem_read(src);
         setter(self, val);
+        self.pc += 2;
         return 12;
     }
     fn ld_mem_r8_r8(&mut self, dest_getter: &Fn(&mut GB) -> u8, src_getter: &Fn(&mut GB) -> u8) -> u32 {
@@ -1007,6 +1027,7 @@ impl GB {
         let mut dest = dest_getter(self) as u16;
         dest = dest| 0xFF00;
         self.mem_write(dest, val);
+        self.pc += 1;
         return 8;
     }
     fn ld_r8_mem_r8(&mut self, dest_setter: &Fn(&mut GB, u8), src_getter: &Fn(&mut GB) -> u8) -> u32 {
@@ -1014,6 +1035,7 @@ impl GB {
         src = src | 0xFF00;
         let val = self.mem_read(src);
         dest_setter(self, val);
+        self.pc += 1;
         return 8;
     }
     fn ld_hl_sp_plus_a8(&mut self, val: u8) -> u32 {
@@ -1039,16 +1061,19 @@ impl GB {
         // Set remaining bits
         self.set_z(0);
         self.set_n(0);
+        self.pc += 2;
         return 12;
     }
     fn ld_sp_hl(&mut self) -> u32 {
         self.sp = self.hl;
+        self.pc += 1;
         return 8;
     }
     fn ld_mem_a16_a(&mut self) -> u32 {
         let a16 = ((self.mem_read(self.pc + 1) as u16) << 8) | (self.mem_read(self.pc + 2) as u16);
         let val = self.get_a();
         self.mem_write(a16, val);
+        self.pc += 3;
         return 16;
     }
     fn ld_a_mem_a16(&mut self) -> u32 {
@@ -1093,6 +1118,7 @@ impl GB {
         // Set N
         self.set_n(0);
 
+        self.pc += 1;
         return 4;
     }
     fn add_r8(&mut self, val: u8) -> u32 {
@@ -1800,24 +1826,32 @@ impl GB {
 fn rlc_b_carry() {
     let mut gb = GB::new();
     gb.pc = 0x100;
+    gb.mem_write(gb.pc, 0xCB);
+    gb.mem_write(gb.pc+1, 0x00);
+
     gb.set_b(0b11001100);
     gb.set_cy(0);
-    gb.shift_r8(&GB::get_b, &GB::rlc, &GB::set_b);
+    gb.emulate_cycle();
     assert_eq!(gb.get_b(), 0b10011001);
     assert_eq!(gb.get_cy(), 1);
 }
 #[test]
 fn rlc_b_no_carry() {
     let mut gb = GB::new();
+    gb.pc = 0x100;
+    gb.mem_write(gb.pc, 0xCB);
+    gb.mem_write(gb.pc+1, 0x00);
+
     gb.set_b(0b00110011);
     gb.set_cy(1);
-    gb.shift_r8(&GB::get_b, &GB::rlc, &GB::set_b);
+    gb.emulate_cycle();
     assert_eq!(gb.get_b(), 0b01100110);
     assert_eq!(gb.get_cy(), 0);
 }
 #[test]
 fn rlc_hl_carry() {
     let mut gb = GB::new();
+    gb.pc = 0x100;
     let addr = 0xC000;
     gb.set_hl(addr);
     gb.mem_write(addr, 0b11001100);
