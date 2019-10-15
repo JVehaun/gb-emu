@@ -196,290 +196,290 @@ impl GB {
         match opcode {
             // RLC
             (0xCB, 0x00) => { self.shift_r8(&GB::get_b, &GB::rlc, &GB::set_b) }
-            (0xCB, 0x01) => { self.shift_r8(&GB::get_b, &GB::rlc, &GB::set_c) }
-            (0xCB, 0x02) => { self.shift_r8(&GB::get_b, &GB::rlc, &GB::set_d) }
-            (0xCB, 0x03) => { self.shift_r8(&GB::get_b, &GB::rlc, &GB::set_e) }
-            (0xCB, 0x04) => { self.shift_r8(&GB::get_b, &GB::rlc, &GB::set_h) }
-            (0xCB, 0x05) => { self.shift_r8(&GB::get_b, &GB::rlc, &GB::set_l) }
+            (0xCB, 0x01) => { self.shift_r8(&GB::get_c, &GB::rlc, &GB::set_c) }
+            (0xCB, 0x02) => { self.shift_r8(&GB::get_d, &GB::rlc, &GB::set_d) }
+            (0xCB, 0x03) => { self.shift_r8(&GB::get_e, &GB::rlc, &GB::set_e) }
+            (0xCB, 0x04) => { self.shift_r8(&GB::get_h, &GB::rlc, &GB::set_h) }
+            (0xCB, 0x05) => { self.shift_r8(&GB::get_l, &GB::rlc, &GB::set_l) }
             (0xCB, 0x06) => { self.shift_mem(&GB::rlc) }
             (0xCB, 0x07) => { self.shift_r8(&GB::get_a, &GB::rlc, &GB::set_a) }
             // RRC
             (0xCB, 0x08) => { self.shift_r8(&GB::get_b, &GB::rrc, &GB::set_b) }
-            (0xCB, 0x09) => { self.shift_r8(&GB::get_b, &GB::rrc, &GB::set_c) }
-            (0xCB, 0x0A) => { self.shift_r8(&GB::get_b, &GB::rrc, &GB::set_d) }
-            (0xCB, 0x0B) => { self.shift_r8(&GB::get_b, &GB::rrc, &GB::set_e) }
-            (0xCB, 0x0C) => { self.shift_r8(&GB::get_b, &GB::rrc, &GB::set_h) }
-            (0xCB, 0x0D) => { self.shift_r8(&GB::get_b, &GB::rrc, &GB::set_l) }
+            (0xCB, 0x09) => { self.shift_r8(&GB::get_c, &GB::rrc, &GB::set_c) }
+            (0xCB, 0x0A) => { self.shift_r8(&GB::get_d, &GB::rrc, &GB::set_d) }
+            (0xCB, 0x0B) => { self.shift_r8(&GB::get_e, &GB::rrc, &GB::set_e) }
+            (0xCB, 0x0C) => { self.shift_r8(&GB::get_h, &GB::rrc, &GB::set_h) }
+            (0xCB, 0x0D) => { self.shift_r8(&GB::get_l, &GB::rrc, &GB::set_l) }
             (0xCB, 0x0E) => { self.shift_mem(&GB::rrc) }
             (0xCB, 0x0F) => { self.shift_r8(&GB::get_a, &GB::rrc, &GB::set_a) }
             // RL
             (0xCB, 0x10) => { self.shift_r8(&GB::get_b, &GB::rl, &GB::set_b) }
-            (0xCB, 0x11) => { self.shift_r8(&GB::get_b, &GB::rl, &GB::set_c) }
-            (0xCB, 0x12) => { self.shift_r8(&GB::get_b, &GB::rl, &GB::set_d) }
-            (0xCB, 0x13) => { self.shift_r8(&GB::get_b, &GB::rl, &GB::set_e) }
-            (0xCB, 0x14) => { self.shift_r8(&GB::get_b, &GB::rl, &GB::set_h) }
-            (0xCB, 0x15) => { self.shift_r8(&GB::get_b, &GB::rl, &GB::set_l) }
+            (0xCB, 0x11) => { self.shift_r8(&GB::get_c, &GB::rl, &GB::set_c) }
+            (0xCB, 0x12) => { self.shift_r8(&GB::get_d, &GB::rl, &GB::set_d) }
+            (0xCB, 0x13) => { self.shift_r8(&GB::get_e, &GB::rl, &GB::set_e) }
+            (0xCB, 0x14) => { self.shift_r8(&GB::get_h, &GB::rl, &GB::set_h) }
+            (0xCB, 0x15) => { self.shift_r8(&GB::get_l, &GB::rl, &GB::set_l) }
             (0xCB, 0x16) => { self.shift_mem(&GB::rl) }
             (0xCB, 0x17) => { self.shift_r8(&GB::get_a, &GB::rl, &GB::set_a) }
             // RR
             (0xCB, 0x18) => { self.shift_r8(&GB::get_b, &GB::rr, &GB::set_b) }
-            (0xCB, 0x19) => { self.shift_r8(&GB::get_b, &GB::rr, &GB::set_c) }
-            (0xCB, 0x1A) => { self.shift_r8(&GB::get_b, &GB::rr, &GB::set_d) }
-            (0xCB, 0x1B) => { self.shift_r8(&GB::get_b, &GB::rr, &GB::set_e) }
-            (0xCB, 0x1C) => { self.shift_r8(&GB::get_b, &GB::rr, &GB::set_h) }
-            (0xCB, 0x1D) => { self.shift_r8(&GB::get_b, &GB::rr, &GB::set_l) }
+            (0xCB, 0x19) => { self.shift_r8(&GB::get_c, &GB::rr, &GB::set_c) }
+            (0xCB, 0x1A) => { self.shift_r8(&GB::get_d, &GB::rr, &GB::set_d) }
+            (0xCB, 0x1B) => { self.shift_r8(&GB::get_e, &GB::rr, &GB::set_e) }
+            (0xCB, 0x1C) => { self.shift_r8(&GB::get_h, &GB::rr, &GB::set_h) }
+            (0xCB, 0x1D) => { self.shift_r8(&GB::get_l, &GB::rr, &GB::set_l) }
             (0xCB, 0x1E) => { self.shift_mem(&GB::rr) }
             (0xCB, 0x1F) => { self.shift_r8(&GB::get_a, &GB::rr, &GB::set_a) }
             // SLA
             (0xCB, 0x20) => { self.shift_r8(&GB::get_b, &GB::sla, &GB::set_b) }
-            (0xCB, 0x21) => { self.shift_r8(&GB::get_b, &GB::sla, &GB::set_c) }
-            (0xCB, 0x22) => { self.shift_r8(&GB::get_b, &GB::sla, &GB::set_d) }
-            (0xCB, 0x23) => { self.shift_r8(&GB::get_b, &GB::sla, &GB::set_e) }
-            (0xCB, 0x24) => { self.shift_r8(&GB::get_b, &GB::sla, &GB::set_h) }
-            (0xCB, 0x25) => { self.shift_r8(&GB::get_b, &GB::sla, &GB::set_l) }
+            (0xCB, 0x21) => { self.shift_r8(&GB::get_c, &GB::sla, &GB::set_c) }
+            (0xCB, 0x22) => { self.shift_r8(&GB::get_d, &GB::sla, &GB::set_d) }
+            (0xCB, 0x23) => { self.shift_r8(&GB::get_e, &GB::sla, &GB::set_e) }
+            (0xCB, 0x24) => { self.shift_r8(&GB::get_h, &GB::sla, &GB::set_h) }
+            (0xCB, 0x25) => { self.shift_r8(&GB::get_l, &GB::sla, &GB::set_l) }
             (0xCB, 0x26) => { self.shift_mem(&GB::sla) }
             (0xCB, 0x27) => { self.shift_r8(&GB::get_a, &GB::sla, &GB::set_a) }
             // SRA
             (0xCB, 0x28) => { self.shift_r8(&GB::get_b, &GB::sra, &GB::set_b) }
-            (0xCB, 0x29) => { self.shift_r8(&GB::get_b, &GB::sra, &GB::set_c) }
-            (0xCB, 0x2A) => { self.shift_r8(&GB::get_b, &GB::sra, &GB::set_d) }
-            (0xCB, 0x2B) => { self.shift_r8(&GB::get_b, &GB::sra, &GB::set_e) }
-            (0xCB, 0x2C) => { self.shift_r8(&GB::get_b, &GB::sra, &GB::set_h) }
-            (0xCB, 0x2D) => { self.shift_r8(&GB::get_b, &GB::sra, &GB::set_l) }
+            (0xCB, 0x29) => { self.shift_r8(&GB::get_c, &GB::sra, &GB::set_c) }
+            (0xCB, 0x2A) => { self.shift_r8(&GB::get_d, &GB::sra, &GB::set_d) }
+            (0xCB, 0x2B) => { self.shift_r8(&GB::get_e, &GB::sra, &GB::set_e) }
+            (0xCB, 0x2C) => { self.shift_r8(&GB::get_h, &GB::sra, &GB::set_h) }
+            (0xCB, 0x2D) => { self.shift_r8(&GB::get_l, &GB::sra, &GB::set_l) }
             (0xCB, 0x2E) => { self.shift_mem(&GB::sra) }
             (0xCB, 0x2F) => { self.shift_r8(&GB::get_a, &GB::sra, &GB::set_a) }
             // SWAP
             (0xCB, 0x30) => { self.shift_r8(&GB::get_b, &GB::swap, &GB::set_b) }
-            (0xCB, 0x31) => { self.shift_r8(&GB::get_b, &GB::swap, &GB::set_c) }
-            (0xCB, 0x32) => { self.shift_r8(&GB::get_b, &GB::swap, &GB::set_d) }
-            (0xCB, 0x33) => { self.shift_r8(&GB::get_b, &GB::swap, &GB::set_e) }
-            (0xCB, 0x34) => { self.shift_r8(&GB::get_b, &GB::swap, &GB::set_h) }
-            (0xCB, 0x35) => { self.shift_r8(&GB::get_b, &GB::swap, &GB::set_l) }
+            (0xCB, 0x31) => { self.shift_r8(&GB::get_c, &GB::swap, &GB::set_c) }
+            (0xCB, 0x32) => { self.shift_r8(&GB::get_d, &GB::swap, &GB::set_d) }
+            (0xCB, 0x33) => { self.shift_r8(&GB::get_e, &GB::swap, &GB::set_e) }
+            (0xCB, 0x34) => { self.shift_r8(&GB::get_h, &GB::swap, &GB::set_h) }
+            (0xCB, 0x35) => { self.shift_r8(&GB::get_l, &GB::swap, &GB::set_l) }
             (0xCB, 0x36) => { self.shift_mem(&GB::swap) }
             (0xCB, 0x37) => { self.shift_r8(&GB::get_a, &GB::swap, &GB::set_a) }
             // SRL
             (0xCB, 0x38) => { self.shift_r8(&GB::get_b, &GB::srl, &GB::set_b) }
-            (0xCB, 0x39) => { self.shift_r8(&GB::get_b, &GB::srl, &GB::set_c) }
-            (0xCB, 0x3A) => { self.shift_r8(&GB::get_b, &GB::srl, &GB::set_d) }
-            (0xCB, 0x3B) => { self.shift_r8(&GB::get_b, &GB::srl, &GB::set_e) }
-            (0xCB, 0x3C) => { self.shift_r8(&GB::get_b, &GB::srl, &GB::set_h) }
-            (0xCB, 0x3D) => { self.shift_r8(&GB::get_b, &GB::srl, &GB::set_l) }
+            (0xCB, 0x39) => { self.shift_r8(&GB::get_c, &GB::srl, &GB::set_c) }
+            (0xCB, 0x3A) => { self.shift_r8(&GB::get_d, &GB::srl, &GB::set_d) }
+            (0xCB, 0x3B) => { self.shift_r8(&GB::get_e, &GB::srl, &GB::set_e) }
+            (0xCB, 0x3C) => { self.shift_r8(&GB::get_h, &GB::srl, &GB::set_h) }
+            (0xCB, 0x3D) => { self.shift_r8(&GB::get_l, &GB::srl, &GB::set_l) }
             (0xCB, 0x3E) => { self.shift_mem(&GB::srl) }
             (0xCB, 0x3F) => { self.shift_r8(&GB::get_a, &GB::srl, &GB::set_a) }
             // BIT 0
             (0xCB, 0x40) => { self.shift_r8(&GB::get_b, &GB::bit_0, &GB::set_b) }
-            (0xCB, 0x41) => { self.shift_r8(&GB::get_b, &GB::bit_0, &GB::set_c) }
-            (0xCB, 0x42) => { self.shift_r8(&GB::get_b, &GB::bit_0, &GB::set_d) }
-            (0xCB, 0x43) => { self.shift_r8(&GB::get_b, &GB::bit_0, &GB::set_e) }
-            (0xCB, 0x44) => { self.shift_r8(&GB::get_b, &GB::bit_0, &GB::set_h) }
-            (0xCB, 0x45) => { self.shift_r8(&GB::get_b, &GB::bit_0, &GB::set_l) }
+            (0xCB, 0x41) => { self.shift_r8(&GB::get_c, &GB::bit_0, &GB::set_c) }
+            (0xCB, 0x42) => { self.shift_r8(&GB::get_d, &GB::bit_0, &GB::set_d) }
+            (0xCB, 0x43) => { self.shift_r8(&GB::get_e, &GB::bit_0, &GB::set_e) }
+            (0xCB, 0x44) => { self.shift_r8(&GB::get_h, &GB::bit_0, &GB::set_h) }
+            (0xCB, 0x45) => { self.shift_r8(&GB::get_l, &GB::bit_0, &GB::set_l) }
             (0xCB, 0x46) => { self.shift_mem(&GB::bit_0) }
             (0xCB, 0x47) => { self.shift_r8(&GB::get_a, &GB::bit_0, &GB::set_a) }
             // BIT 1
             (0xCB, 0x48) => { self.shift_r8(&GB::get_b, &GB::bit_1, &GB::set_b) }
-            (0xCB, 0x49) => { self.shift_r8(&GB::get_b, &GB::bit_1, &GB::set_c) }
-            (0xCB, 0x4A) => { self.shift_r8(&GB::get_b, &GB::bit_1, &GB::set_d) }
-            (0xCB, 0x4B) => { self.shift_r8(&GB::get_b, &GB::bit_1, &GB::set_e) }
-            (0xCB, 0x4C) => { self.shift_r8(&GB::get_b, &GB::bit_1, &GB::set_h) }
-            (0xCB, 0x4D) => { self.shift_r8(&GB::get_b, &GB::bit_1, &GB::set_l) }
+            (0xCB, 0x49) => { self.shift_r8(&GB::get_c, &GB::bit_1, &GB::set_c) }
+            (0xCB, 0x4A) => { self.shift_r8(&GB::get_d, &GB::bit_1, &GB::set_d) }
+            (0xCB, 0x4B) => { self.shift_r8(&GB::get_e, &GB::bit_1, &GB::set_e) }
+            (0xCB, 0x4C) => { self.shift_r8(&GB::get_h, &GB::bit_1, &GB::set_h) }
+            (0xCB, 0x4D) => { self.shift_r8(&GB::get_l, &GB::bit_1, &GB::set_l) }
             (0xCB, 0x4E) => { self.shift_mem(&GB::bit_1) }
             (0xCB, 0x4F) => { self.shift_r8(&GB::get_a, &GB::bit_1, &GB::set_a) }
             // BIT 2
             (0xCB, 0x50) => { self.shift_r8(&GB::get_b, &GB::bit_2, &GB::set_b) }
-            (0xCB, 0x51) => { self.shift_r8(&GB::get_b, &GB::bit_2, &GB::set_c) }
-            (0xCB, 0x52) => { self.shift_r8(&GB::get_b, &GB::bit_2, &GB::set_d) }
-            (0xCB, 0x53) => { self.shift_r8(&GB::get_b, &GB::bit_2, &GB::set_e) }
-            (0xCB, 0x54) => { self.shift_r8(&GB::get_b, &GB::bit_2, &GB::set_h) }
-            (0xCB, 0x55) => { self.shift_r8(&GB::get_b, &GB::bit_2, &GB::set_l) }
+            (0xCB, 0x51) => { self.shift_r8(&GB::get_c, &GB::bit_2, &GB::set_c) }
+            (0xCB, 0x52) => { self.shift_r8(&GB::get_d, &GB::bit_2, &GB::set_d) }
+            (0xCB, 0x53) => { self.shift_r8(&GB::get_e, &GB::bit_2, &GB::set_e) }
+            (0xCB, 0x54) => { self.shift_r8(&GB::get_h, &GB::bit_2, &GB::set_h) }
+            (0xCB, 0x55) => { self.shift_r8(&GB::get_l, &GB::bit_2, &GB::set_l) }
             (0xCB, 0x56) => { self.shift_mem(&GB::bit_2) }
             (0xCB, 0x57) => { self.shift_r8(&GB::get_a, &GB::bit_2, &GB::set_a) }
             // BIT 3
             (0xCB, 0x58) => { self.shift_r8(&GB::get_b, &GB::bit_3, &GB::set_b) }
-            (0xCB, 0x59) => { self.shift_r8(&GB::get_b, &GB::bit_3, &GB::set_c) }
-            (0xCB, 0x5A) => { self.shift_r8(&GB::get_b, &GB::bit_3, &GB::set_d) }
-            (0xCB, 0x5B) => { self.shift_r8(&GB::get_b, &GB::bit_3, &GB::set_e) }
-            (0xCB, 0x5C) => { self.shift_r8(&GB::get_b, &GB::bit_3, &GB::set_h) }
-            (0xCB, 0x5D) => { self.shift_r8(&GB::get_b, &GB::bit_3, &GB::set_l) }
+            (0xCB, 0x59) => { self.shift_r8(&GB::get_c, &GB::bit_3, &GB::set_c) }
+            (0xCB, 0x5A) => { self.shift_r8(&GB::get_d, &GB::bit_3, &GB::set_d) }
+            (0xCB, 0x5B) => { self.shift_r8(&GB::get_e, &GB::bit_3, &GB::set_e) }
+            (0xCB, 0x5C) => { self.shift_r8(&GB::get_h, &GB::bit_3, &GB::set_h) }
+            (0xCB, 0x5D) => { self.shift_r8(&GB::get_l, &GB::bit_3, &GB::set_l) }
             (0xCB, 0x5E) => { self.shift_mem(&GB::bit_3) }
             (0xCB, 0x5F) => { self.shift_r8(&GB::get_a, &GB::bit_3, &GB::set_a) }
             // BIT 4
             (0xCB, 0x60) => { self.shift_r8(&GB::get_b, &GB::bit_4, &GB::set_b) }
-            (0xCB, 0x61) => { self.shift_r8(&GB::get_b, &GB::bit_4, &GB::set_c) }
-            (0xCB, 0x62) => { self.shift_r8(&GB::get_b, &GB::bit_4, &GB::set_d) }
-            (0xCB, 0x63) => { self.shift_r8(&GB::get_b, &GB::bit_4, &GB::set_e) }
-            (0xCB, 0x64) => { self.shift_r8(&GB::get_b, &GB::bit_4, &GB::set_h) }
-            (0xCB, 0x65) => { self.shift_r8(&GB::get_b, &GB::bit_4, &GB::set_l) }
+            (0xCB, 0x61) => { self.shift_r8(&GB::get_c, &GB::bit_4, &GB::set_c) }
+            (0xCB, 0x62) => { self.shift_r8(&GB::get_d, &GB::bit_4, &GB::set_d) }
+            (0xCB, 0x63) => { self.shift_r8(&GB::get_e, &GB::bit_4, &GB::set_e) }
+            (0xCB, 0x64) => { self.shift_r8(&GB::get_h, &GB::bit_4, &GB::set_h) }
+            (0xCB, 0x65) => { self.shift_r8(&GB::get_l, &GB::bit_4, &GB::set_l) }
             (0xCB, 0x66) => { self.shift_mem(&GB::bit_4) }
             (0xCB, 0x67) => { self.shift_r8(&GB::get_a, &GB::bit_4, &GB::set_a) }
             // BIT 5
             (0xCB, 0x68) => { self.shift_r8(&GB::get_b, &GB::bit_5, &GB::set_b) }
-            (0xCB, 0x69) => { self.shift_r8(&GB::get_b, &GB::bit_5, &GB::set_c) }
-            (0xCB, 0x6A) => { self.shift_r8(&GB::get_b, &GB::bit_5, &GB::set_d) }
-            (0xCB, 0x6B) => { self.shift_r8(&GB::get_b, &GB::bit_5, &GB::set_e) }
-            (0xCB, 0x6C) => { self.shift_r8(&GB::get_b, &GB::bit_5, &GB::set_h) }
-            (0xCB, 0x6D) => { self.shift_r8(&GB::get_b, &GB::bit_5, &GB::set_l) }
+            (0xCB, 0x69) => { self.shift_r8(&GB::get_c, &GB::bit_5, &GB::set_c) }
+            (0xCB, 0x6A) => { self.shift_r8(&GB::get_d, &GB::bit_5, &GB::set_d) }
+            (0xCB, 0x6B) => { self.shift_r8(&GB::get_e, &GB::bit_5, &GB::set_e) }
+            (0xCB, 0x6C) => { self.shift_r8(&GB::get_h, &GB::bit_5, &GB::set_h) }
+            (0xCB, 0x6D) => { self.shift_r8(&GB::get_l, &GB::bit_5, &GB::set_l) }
             (0xCB, 0x6E) => { self.shift_mem(&GB::bit_5) }
             (0xCB, 0x6F) => { self.shift_r8(&GB::get_a, &GB::bit_5, &GB::set_a) }
             // BIT 6
             (0xCB, 0x70) => { self.shift_r8(&GB::get_b, &GB::bit_6, &GB::set_b) }
-            (0xCB, 0x71) => { self.shift_r8(&GB::get_b, &GB::bit_6, &GB::set_c) }
-            (0xCB, 0x72) => { self.shift_r8(&GB::get_b, &GB::bit_6, &GB::set_d) }
-            (0xCB, 0x73) => { self.shift_r8(&GB::get_b, &GB::bit_6, &GB::set_e) }
-            (0xCB, 0x74) => { self.shift_r8(&GB::get_b, &GB::bit_6, &GB::set_h) }
-            (0xCB, 0x75) => { self.shift_r8(&GB::get_b, &GB::bit_6, &GB::set_l) }
+            (0xCB, 0x71) => { self.shift_r8(&GB::get_c, &GB::bit_6, &GB::set_c) }
+            (0xCB, 0x72) => { self.shift_r8(&GB::get_d, &GB::bit_6, &GB::set_d) }
+            (0xCB, 0x73) => { self.shift_r8(&GB::get_e, &GB::bit_6, &GB::set_e) }
+            (0xCB, 0x74) => { self.shift_r8(&GB::get_h, &GB::bit_6, &GB::set_h) }
+            (0xCB, 0x75) => { self.shift_r8(&GB::get_l, &GB::bit_6, &GB::set_l) }
             (0xCB, 0x76) => { self.shift_mem(&GB::bit_6) }
             (0xCB, 0x77) => { self.shift_r8(&GB::get_a, &GB::bit_6, &GB::set_a) }
             // BIT 7
             (0xCB, 0x78) => { self.shift_r8(&GB::get_b, &GB::bit_7, &GB::set_b) }
-            (0xCB, 0x79) => { self.shift_r8(&GB::get_b, &GB::bit_7, &GB::set_c) }
-            (0xCB, 0x7A) => { self.shift_r8(&GB::get_b, &GB::bit_7, &GB::set_d) }
-            (0xCB, 0x7B) => { self.shift_r8(&GB::get_b, &GB::bit_7, &GB::set_e) }
-            (0xCB, 0x7C) => { self.shift_r8(&GB::get_b, &GB::bit_7, &GB::set_h) }
-            (0xCB, 0x7D) => { self.shift_r8(&GB::get_b, &GB::bit_7, &GB::set_l) }
+            (0xCB, 0x79) => { self.shift_r8(&GB::get_c, &GB::bit_7, &GB::set_c) }
+            (0xCB, 0x7A) => { self.shift_r8(&GB::get_d, &GB::bit_7, &GB::set_d) }
+            (0xCB, 0x7B) => { self.shift_r8(&GB::get_e, &GB::bit_7, &GB::set_e) }
+            (0xCB, 0x7C) => { self.shift_r8(&GB::get_h, &GB::bit_7, &GB::set_h) }
+            (0xCB, 0x7D) => { self.shift_r8(&GB::get_l, &GB::bit_7, &GB::set_l) }
             (0xCB, 0x7E) => { self.shift_mem(&GB::bit_7) }
             (0xCB, 0x7F) => { self.shift_r8(&GB::get_a, &GB::bit_7, &GB::set_a) }
             // RES 0
             (0xCB, 0x80) => { self.shift_r8(&GB::get_b, &GB::res_0, &GB::set_b) }
-            (0xCB, 0x81) => { self.shift_r8(&GB::get_b, &GB::res_0, &GB::set_c) }
-            (0xCB, 0x82) => { self.shift_r8(&GB::get_b, &GB::res_0, &GB::set_d) }
-            (0xCB, 0x83) => { self.shift_r8(&GB::get_b, &GB::res_0, &GB::set_e) }
-            (0xCB, 0x84) => { self.shift_r8(&GB::get_b, &GB::res_0, &GB::set_h) }
-            (0xCB, 0x85) => { self.shift_r8(&GB::get_b, &GB::res_0, &GB::set_l) }
+            (0xCB, 0x81) => { self.shift_r8(&GB::get_c, &GB::res_0, &GB::set_c) }
+            (0xCB, 0x82) => { self.shift_r8(&GB::get_d, &GB::res_0, &GB::set_d) }
+            (0xCB, 0x83) => { self.shift_r8(&GB::get_e, &GB::res_0, &GB::set_e) }
+            (0xCB, 0x84) => { self.shift_r8(&GB::get_h, &GB::res_0, &GB::set_h) }
+            (0xCB, 0x85) => { self.shift_r8(&GB::get_l, &GB::res_0, &GB::set_l) }
             (0xCB, 0x86) => { self.shift_mem(&GB::res_0) }
             (0xCB, 0x87) => { self.shift_r8(&GB::get_a, &GB::res_0, &GB::set_a) }
             // RES 1
             (0xCB, 0x88) => { self.shift_r8(&GB::get_b, &GB::res_1, &GB::set_b) }
-            (0xCB, 0x89) => { self.shift_r8(&GB::get_b, &GB::res_1, &GB::set_c) }
-            (0xCB, 0x8A) => { self.shift_r8(&GB::get_b, &GB::res_1, &GB::set_d) }
-            (0xCB, 0x8B) => { self.shift_r8(&GB::get_b, &GB::res_1, &GB::set_e) }
-            (0xCB, 0x8C) => { self.shift_r8(&GB::get_b, &GB::res_1, &GB::set_h) }
-            (0xCB, 0x8D) => { self.shift_r8(&GB::get_b, &GB::res_1, &GB::set_l) }
+            (0xCB, 0x89) => { self.shift_r8(&GB::get_c, &GB::res_1, &GB::set_c) }
+            (0xCB, 0x8A) => { self.shift_r8(&GB::get_d, &GB::res_1, &GB::set_d) }
+            (0xCB, 0x8B) => { self.shift_r8(&GB::get_e, &GB::res_1, &GB::set_e) }
+            (0xCB, 0x8C) => { self.shift_r8(&GB::get_h, &GB::res_1, &GB::set_h) }
+            (0xCB, 0x8D) => { self.shift_r8(&GB::get_l, &GB::res_1, &GB::set_l) }
             (0xCB, 0x8E) => { self.shift_mem(&GB::res_1) }
             (0xCB, 0x8F) => { self.shift_r8(&GB::get_a, &GB::res_1, &GB::set_a) }
             // RES 2
             (0xCB, 0x90) => { self.shift_r8(&GB::get_b, &GB::res_2, &GB::set_b) }
-            (0xCB, 0x91) => { self.shift_r8(&GB::get_b, &GB::res_2, &GB::set_c) }
-            (0xCB, 0x92) => { self.shift_r8(&GB::get_b, &GB::res_2, &GB::set_d) }
-            (0xCB, 0x93) => { self.shift_r8(&GB::get_b, &GB::res_2, &GB::set_e) }
-            (0xCB, 0x94) => { self.shift_r8(&GB::get_b, &GB::res_2, &GB::set_h) }
-            (0xCB, 0x95) => { self.shift_r8(&GB::get_b, &GB::res_2, &GB::set_l) }
+            (0xCB, 0x91) => { self.shift_r8(&GB::get_c, &GB::res_2, &GB::set_c) }
+            (0xCB, 0x92) => { self.shift_r8(&GB::get_d, &GB::res_2, &GB::set_d) }
+            (0xCB, 0x93) => { self.shift_r8(&GB::get_e, &GB::res_2, &GB::set_e) }
+            (0xCB, 0x94) => { self.shift_r8(&GB::get_h, &GB::res_2, &GB::set_h) }
+            (0xCB, 0x95) => { self.shift_r8(&GB::get_l, &GB::res_2, &GB::set_l) }
             (0xCB, 0x96) => { self.shift_mem(&GB::res_2) }
             (0xCB, 0x97) => { self.shift_r8(&GB::get_a, &GB::res_2, &GB::set_a) }
             // RES 3
             (0xCB, 0x98) => { self.shift_r8(&GB::get_b, &GB::res_3, &GB::set_b) }
-            (0xCB, 0x99) => { self.shift_r8(&GB::get_b, &GB::res_3, &GB::set_c) }
-            (0xCB, 0x9A) => { self.shift_r8(&GB::get_b, &GB::res_3, &GB::set_d) }
-            (0xCB, 0x9B) => { self.shift_r8(&GB::get_b, &GB::res_3, &GB::set_e) }
-            (0xCB, 0x9C) => { self.shift_r8(&GB::get_b, &GB::res_3, &GB::set_h) }
-            (0xCB, 0x9D) => { self.shift_r8(&GB::get_b, &GB::res_3, &GB::set_l) }
+            (0xCB, 0x99) => { self.shift_r8(&GB::get_c, &GB::res_3, &GB::set_c) }
+            (0xCB, 0x9A) => { self.shift_r8(&GB::get_d, &GB::res_3, &GB::set_d) }
+            (0xCB, 0x9B) => { self.shift_r8(&GB::get_e, &GB::res_3, &GB::set_e) }
+            (0xCB, 0x9C) => { self.shift_r8(&GB::get_h, &GB::res_3, &GB::set_h) }
+            (0xCB, 0x9D) => { self.shift_r8(&GB::get_l, &GB::res_3, &GB::set_l) }
             (0xCB, 0x9E) => { self.shift_mem(&GB::res_3) }
             (0xCB, 0x9F) => { self.shift_r8(&GB::get_a, &GB::res_3, &GB::set_a) }
             // RES 4
             (0xCB, 0xA0) => { self.shift_r8(&GB::get_b, &GB::res_4, &GB::set_b) }
-            (0xCB, 0xA1) => { self.shift_r8(&GB::get_b, &GB::res_4, &GB::set_c) }
-            (0xCB, 0xA2) => { self.shift_r8(&GB::get_b, &GB::res_4, &GB::set_d) }
-            (0xCB, 0xA3) => { self.shift_r8(&GB::get_b, &GB::res_4, &GB::set_e) }
-            (0xCB, 0xA4) => { self.shift_r8(&GB::get_b, &GB::res_4, &GB::set_h) }
-            (0xCB, 0xA5) => { self.shift_r8(&GB::get_b, &GB::res_4, &GB::set_l) }
+            (0xCB, 0xA1) => { self.shift_r8(&GB::get_c, &GB::res_4, &GB::set_c) }
+            (0xCB, 0xA2) => { self.shift_r8(&GB::get_d, &GB::res_4, &GB::set_d) }
+            (0xCB, 0xA3) => { self.shift_r8(&GB::get_e, &GB::res_4, &GB::set_e) }
+            (0xCB, 0xA4) => { self.shift_r8(&GB::get_h, &GB::res_4, &GB::set_h) }
+            (0xCB, 0xA5) => { self.shift_r8(&GB::get_l, &GB::res_4, &GB::set_l) }
             (0xCB, 0xA6) => { self.shift_mem(&GB::res_4) }
             (0xCB, 0xA7) => { self.shift_r8(&GB::get_a, &GB::res_4, &GB::set_a) }
             // RES 5
             (0xCB, 0xA8) => { self.shift_r8(&GB::get_b, &GB::res_5, &GB::set_b) }
-            (0xCB, 0xA9) => { self.shift_r8(&GB::get_b, &GB::res_5, &GB::set_c) }
-            (0xCB, 0xAA) => { self.shift_r8(&GB::get_b, &GB::res_5, &GB::set_d) }
-            (0xCB, 0xAB) => { self.shift_r8(&GB::get_b, &GB::res_5, &GB::set_e) }
-            (0xCB, 0xAC) => { self.shift_r8(&GB::get_b, &GB::res_5, &GB::set_h) }
-            (0xCB, 0xAD) => { self.shift_r8(&GB::get_b, &GB::res_5, &GB::set_l) }
+            (0xCB, 0xA9) => { self.shift_r8(&GB::get_c, &GB::res_5, &GB::set_c) }
+            (0xCB, 0xAA) => { self.shift_r8(&GB::get_d, &GB::res_5, &GB::set_d) }
+            (0xCB, 0xAB) => { self.shift_r8(&GB::get_e, &GB::res_5, &GB::set_e) }
+            (0xCB, 0xAC) => { self.shift_r8(&GB::get_h, &GB::res_5, &GB::set_h) }
+            (0xCB, 0xAD) => { self.shift_r8(&GB::get_l, &GB::res_5, &GB::set_l) }
             (0xCB, 0xAE) => { self.shift_mem(&GB::res_5) }
             (0xCB, 0xAF) => { self.shift_r8(&GB::get_a, &GB::res_5, &GB::set_a) }
             // RES 6
             (0xCB, 0xB0) => { self.shift_r8(&GB::get_b, &GB::res_6, &GB::set_b) }
-            (0xCB, 0xB1) => { self.shift_r8(&GB::get_b, &GB::res_6, &GB::set_c) }
-            (0xCB, 0xB2) => { self.shift_r8(&GB::get_b, &GB::res_6, &GB::set_d) }
-            (0xCB, 0xB3) => { self.shift_r8(&GB::get_b, &GB::res_6, &GB::set_e) }
-            (0xCB, 0xB4) => { self.shift_r8(&GB::get_b, &GB::res_6, &GB::set_h) }
-            (0xCB, 0xB5) => { self.shift_r8(&GB::get_b, &GB::res_6, &GB::set_l) }
+            (0xCB, 0xB1) => { self.shift_r8(&GB::get_c, &GB::res_6, &GB::set_c) }
+            (0xCB, 0xB2) => { self.shift_r8(&GB::get_d, &GB::res_6, &GB::set_d) }
+            (0xCB, 0xB3) => { self.shift_r8(&GB::get_e, &GB::res_6, &GB::set_e) }
+            (0xCB, 0xB4) => { self.shift_r8(&GB::get_h, &GB::res_6, &GB::set_h) }
+            (0xCB, 0xB5) => { self.shift_r8(&GB::get_l, &GB::res_6, &GB::set_l) }
             (0xCB, 0xB6) => { self.shift_mem(&GB::res_6) }
             (0xCB, 0xB7) => { self.shift_r8(&GB::get_a, &GB::res_6, &GB::set_a) }
             // RES 7
             (0xCB, 0xB8) => { self.shift_r8(&GB::get_b, &GB::res_7, &GB::set_b) }
-            (0xCB, 0xB9) => { self.shift_r8(&GB::get_b, &GB::res_7, &GB::set_c) }
-            (0xCB, 0xBA) => { self.shift_r8(&GB::get_b, &GB::res_7, &GB::set_d) }
-            (0xCB, 0xBB) => { self.shift_r8(&GB::get_b, &GB::res_7, &GB::set_e) }
-            (0xCB, 0xBC) => { self.shift_r8(&GB::get_b, &GB::res_7, &GB::set_h) }
-            (0xCB, 0xBD) => { self.shift_r8(&GB::get_b, &GB::res_7, &GB::set_l) }
+            (0xCB, 0xB9) => { self.shift_r8(&GB::get_c, &GB::res_7, &GB::set_c) }
+            (0xCB, 0xBA) => { self.shift_r8(&GB::get_d, &GB::res_7, &GB::set_d) }
+            (0xCB, 0xBB) => { self.shift_r8(&GB::get_e, &GB::res_7, &GB::set_e) }
+            (0xCB, 0xBC) => { self.shift_r8(&GB::get_h, &GB::res_7, &GB::set_h) }
+            (0xCB, 0xBD) => { self.shift_r8(&GB::get_l, &GB::res_7, &GB::set_l) }
             (0xCB, 0xBE) => { self.shift_mem(&GB::res_7) }
             (0xCB, 0xBF) => { self.shift_r8(&GB::get_a, &GB::res_7, &GB::set_a) }
             // SET 0
             (0xCB, 0xC0) => { self.shift_r8(&GB::get_b, &GB::set_0, &GB::set_b) }
-            (0xCB, 0xC1) => { self.shift_r8(&GB::get_b, &GB::set_0, &GB::set_c) }
-            (0xCB, 0xC2) => { self.shift_r8(&GB::get_b, &GB::set_0, &GB::set_d) }
-            (0xCB, 0xC3) => { self.shift_r8(&GB::get_b, &GB::set_0, &GB::set_e) }
-            (0xCB, 0xC4) => { self.shift_r8(&GB::get_b, &GB::set_0, &GB::set_h) }
-            (0xCB, 0xC5) => { self.shift_r8(&GB::get_b, &GB::set_0, &GB::set_l) }
+            (0xCB, 0xC1) => { self.shift_r8(&GB::get_c, &GB::set_0, &GB::set_c) }
+            (0xCB, 0xC2) => { self.shift_r8(&GB::get_d, &GB::set_0, &GB::set_d) }
+            (0xCB, 0xC3) => { self.shift_r8(&GB::get_e, &GB::set_0, &GB::set_e) }
+            (0xCB, 0xC4) => { self.shift_r8(&GB::get_h, &GB::set_0, &GB::set_h) }
+            (0xCB, 0xC5) => { self.shift_r8(&GB::get_l, &GB::set_0, &GB::set_l) }
             (0xCB, 0xC6) => { self.shift_mem(&GB::set_0) }
             (0xCB, 0xC7) => { self.shift_r8(&GB::get_a, &GB::set_0, &GB::set_a) }
             // SET 1
             (0xCB, 0xC8) => { self.shift_r8(&GB::get_b, &GB::set_1, &GB::set_b) }
-            (0xCB, 0xC9) => { self.shift_r8(&GB::get_b, &GB::set_1, &GB::set_c) }
-            (0xCB, 0xCA) => { self.shift_r8(&GB::get_b, &GB::set_1, &GB::set_d) }
-            (0xCB, 0xCB) => { self.shift_r8(&GB::get_b, &GB::set_1, &GB::set_e) }
-            (0xCB, 0xCC) => { self.shift_r8(&GB::get_b, &GB::set_1, &GB::set_h) }
-            (0xCB, 0xCD) => { self.shift_r8(&GB::get_b, &GB::set_1, &GB::set_l) }
+            (0xCB, 0xC9) => { self.shift_r8(&GB::get_c, &GB::set_1, &GB::set_c) }
+            (0xCB, 0xCA) => { self.shift_r8(&GB::get_d, &GB::set_1, &GB::set_d) }
+            (0xCB, 0xCB) => { self.shift_r8(&GB::get_e, &GB::set_1, &GB::set_e) }
+            (0xCB, 0xCC) => { self.shift_r8(&GB::get_h, &GB::set_1, &GB::set_h) }
+            (0xCB, 0xCD) => { self.shift_r8(&GB::get_l, &GB::set_1, &GB::set_l) }
             (0xCB, 0xCE) => { self.shift_mem(&GB::set_1) }
             (0xCB, 0xCF) => { self.shift_r8(&GB::get_a, &GB::set_1, &GB::set_a) }
             // SET 2
             (0xCB, 0xD0) => { self.shift_r8(&GB::get_b, &GB::set_2, &GB::set_b) }
-            (0xCB, 0xD1) => { self.shift_r8(&GB::get_b, &GB::set_2, &GB::set_c) }
-            (0xCB, 0xD2) => { self.shift_r8(&GB::get_b, &GB::set_2, &GB::set_d) }
-            (0xCB, 0xD3) => { self.shift_r8(&GB::get_b, &GB::set_2, &GB::set_e) }
-            (0xCB, 0xD4) => { self.shift_r8(&GB::get_b, &GB::set_2, &GB::set_h) }
-            (0xCB, 0xD5) => { self.shift_r8(&GB::get_b, &GB::set_2, &GB::set_l) }
+            (0xCB, 0xD1) => { self.shift_r8(&GB::get_c, &GB::set_2, &GB::set_c) }
+            (0xCB, 0xD2) => { self.shift_r8(&GB::get_d, &GB::set_2, &GB::set_d) }
+            (0xCB, 0xD3) => { self.shift_r8(&GB::get_e, &GB::set_2, &GB::set_e) }
+            (0xCB, 0xD4) => { self.shift_r8(&GB::get_h, &GB::set_2, &GB::set_h) }
+            (0xCB, 0xD5) => { self.shift_r8(&GB::get_l, &GB::set_2, &GB::set_l) }
             (0xCB, 0xD6) => { self.shift_mem(&GB::set_2) }
             (0xCB, 0xD7) => { self.shift_r8(&GB::get_a, &GB::set_2, &GB::set_a) }
             // SET 3
             (0xCB, 0xD8) => { self.shift_r8(&GB::get_b, &GB::set_3, &GB::set_b) }
-            (0xCB, 0xD9) => { self.shift_r8(&GB::get_b, &GB::set_3, &GB::set_c) }
-            (0xCB, 0xDA) => { self.shift_r8(&GB::get_b, &GB::set_3, &GB::set_d) }
-            (0xCB, 0xDB) => { self.shift_r8(&GB::get_b, &GB::set_3, &GB::set_e) }
-            (0xCB, 0xDC) => { self.shift_r8(&GB::get_b, &GB::set_3, &GB::set_h) }
-            (0xCB, 0xDD) => { self.shift_r8(&GB::get_b, &GB::set_3, &GB::set_l) }
+            (0xCB, 0xD9) => { self.shift_r8(&GB::get_c, &GB::set_3, &GB::set_c) }
+            (0xCB, 0xDA) => { self.shift_r8(&GB::get_d, &GB::set_3, &GB::set_d) }
+            (0xCB, 0xDB) => { self.shift_r8(&GB::get_e, &GB::set_3, &GB::set_e) }
+            (0xCB, 0xDC) => { self.shift_r8(&GB::get_h, &GB::set_3, &GB::set_h) }
+            (0xCB, 0xDD) => { self.shift_r8(&GB::get_l, &GB::set_3, &GB::set_l) }
             (0xCB, 0xDE) => { self.shift_mem(&GB::set_3) }
             (0xCB, 0xDF) => { self.shift_r8(&GB::get_a, &GB::set_3, &GB::set_a) }
             // SET 4
             (0xCB, 0xE0) => { self.shift_r8(&GB::get_b, &GB::set_4, &GB::set_b) }
-            (0xCB, 0xE1) => { self.shift_r8(&GB::get_b, &GB::set_4, &GB::set_c) }
-            (0xCB, 0xE2) => { self.shift_r8(&GB::get_b, &GB::set_4, &GB::set_d) }
-            (0xCB, 0xE3) => { self.shift_r8(&GB::get_b, &GB::set_4, &GB::set_e) }
-            (0xCB, 0xE4) => { self.shift_r8(&GB::get_b, &GB::set_4, &GB::set_h) }
-            (0xCB, 0xE5) => { self.shift_r8(&GB::get_b, &GB::set_4, &GB::set_l) }
+            (0xCB, 0xE1) => { self.shift_r8(&GB::get_c, &GB::set_4, &GB::set_c) }
+            (0xCB, 0xE2) => { self.shift_r8(&GB::get_d, &GB::set_4, &GB::set_d) }
+            (0xCB, 0xE3) => { self.shift_r8(&GB::get_e, &GB::set_4, &GB::set_e) }
+            (0xCB, 0xE4) => { self.shift_r8(&GB::get_h, &GB::set_4, &GB::set_h) }
+            (0xCB, 0xE5) => { self.shift_r8(&GB::get_l, &GB::set_4, &GB::set_l) }
             (0xCB, 0xE6) => { self.shift_mem(&GB::set_4) }
             (0xCB, 0xE7) => { self.shift_r8(&GB::get_a, &GB::set_4, &GB::set_a) }
             // SET 5
             (0xCB, 0xE8) => { self.shift_r8(&GB::get_b, &GB::set_5, &GB::set_b) }
-            (0xCB, 0xE9) => { self.shift_r8(&GB::get_b, &GB::set_5, &GB::set_c) }
-            (0xCB, 0xEA) => { self.shift_r8(&GB::get_b, &GB::set_5, &GB::set_d) }
-            (0xCB, 0xEB) => { self.shift_r8(&GB::get_b, &GB::set_5, &GB::set_e) }
-            (0xCB, 0xEC) => { self.shift_r8(&GB::get_b, &GB::set_5, &GB::set_h) }
-            (0xCB, 0xED) => { self.shift_r8(&GB::get_b, &GB::set_5, &GB::set_l) }
+            (0xCB, 0xE9) => { self.shift_r8(&GB::get_c, &GB::set_5, &GB::set_c) }
+            (0xCB, 0xEA) => { self.shift_r8(&GB::get_d, &GB::set_5, &GB::set_d) }
+            (0xCB, 0xEB) => { self.shift_r8(&GB::get_e, &GB::set_5, &GB::set_e) }
+            (0xCB, 0xEC) => { self.shift_r8(&GB::get_h, &GB::set_5, &GB::set_h) }
+            (0xCB, 0xED) => { self.shift_r8(&GB::get_l, &GB::set_5, &GB::set_l) }
             (0xCB, 0xEE) => { self.shift_mem(&GB::set_5) }
             (0xCB, 0xEF) => { self.shift_r8(&GB::get_a, &GB::set_5, &GB::set_a) }
             // SET 6
             (0xCB, 0xF0) => { self.shift_r8(&GB::get_b, &GB::set_6, &GB::set_b) }
-            (0xCB, 0xF1) => { self.shift_r8(&GB::get_b, &GB::set_6, &GB::set_c) }
-            (0xCB, 0xF2) => { self.shift_r8(&GB::get_b, &GB::set_6, &GB::set_d) }
-            (0xCB, 0xF3) => { self.shift_r8(&GB::get_b, &GB::set_6, &GB::set_e) }
-            (0xCB, 0xF4) => { self.shift_r8(&GB::get_b, &GB::set_6, &GB::set_h) }
-            (0xCB, 0xF5) => { self.shift_r8(&GB::get_b, &GB::set_6, &GB::set_l) }
+            (0xCB, 0xF1) => { self.shift_r8(&GB::get_c, &GB::set_6, &GB::set_c) }
+            (0xCB, 0xF2) => { self.shift_r8(&GB::get_d, &GB::set_6, &GB::set_d) }
+            (0xCB, 0xF3) => { self.shift_r8(&GB::get_e, &GB::set_6, &GB::set_e) }
+            (0xCB, 0xF4) => { self.shift_r8(&GB::get_h, &GB::set_6, &GB::set_h) }
+            (0xCB, 0xF5) => { self.shift_r8(&GB::get_l, &GB::set_6, &GB::set_l) }
             (0xCB, 0xF6) => { self.shift_mem(&GB::set_6) }
             (0xCB, 0xF7) => { self.shift_r8(&GB::get_a, &GB::set_6, &GB::set_a) }
             // SET 7
             (0xCB, 0xF8) => { self.shift_r8(&GB::get_b, &GB::set_7, &GB::set_b) }
-            (0xCB, 0xF9) => { self.shift_r8(&GB::get_b, &GB::set_7, &GB::set_c) }
-            (0xCB, 0xFA) => { self.shift_r8(&GB::get_b, &GB::set_7, &GB::set_d) }
-            (0xCB, 0xFB) => { self.shift_r8(&GB::get_b, &GB::set_7, &GB::set_e) }
-            (0xCB, 0xFC) => { self.shift_r8(&GB::get_b, &GB::set_7, &GB::set_h) }
-            (0xCB, 0xFD) => { self.shift_r8(&GB::get_b, &GB::set_7, &GB::set_l) }
+            (0xCB, 0xF9) => { self.shift_r8(&GB::get_c, &GB::set_7, &GB::set_c) }
+            (0xCB, 0xFA) => { self.shift_r8(&GB::get_d, &GB::set_7, &GB::set_d) }
+            (0xCB, 0xFB) => { self.shift_r8(&GB::get_e, &GB::set_7, &GB::set_e) }
+            (0xCB, 0xFC) => { self.shift_r8(&GB::get_h, &GB::set_7, &GB::set_h) }
+            (0xCB, 0xFD) => { self.shift_r8(&GB::get_l, &GB::set_7, &GB::set_l) }
             (0xCB, 0xFE) => { self.shift_mem(&GB::set_7) }
             (0xCB, 0xFF) => { self.shift_r8(&GB::get_a, &GB::set_7, &GB::set_a) }
 
@@ -763,10 +763,10 @@ impl GB {
             (0xE1, _) => { self.pop_hl() }
             (0xF1, _) => { self.pop_af() }
             // Shift A stuff
-            (0x07, _) => { GB::shift_a(self, &GB::rlc) }
-            (0x0F, _) => { GB::shift_a(self, &GB::rrc) }
-            (0x17, _) => { GB::shift_a(self, &GB::rl) }
-            (0x1F, _) => { GB::shift_a(self, &GB::rr) }
+            (0x07, _) => { self.shift_r8(&GB::get_b, &GB::rlc, &GB::set_b) }
+            (0x0F, _) => { self.shift_r8(&GB::get_b, &GB::rrc, &GB::set_b) }
+            (0x17, _) => { self.shift_r8(&GB::get_b, &GB::rl, &GB::set_b) }
+            (0x1F, _) => { self.shift_r8(&GB::get_b, &GB::rr, &GB::set_b) }
             (0xF1, _) => { self.pop_af() }
             // Random stuff
             (0x27, _) => { self.daa() }
@@ -788,48 +788,6 @@ impl GB {
         let mut r = getter(self);
         r = f(self, r);
         setter(self, r);
-        return 8;
-    }
-    pub fn shift_a(gb: &mut GB, f: &Fn(&mut GB, u8) -> u8) -> u32 {
-        let mut r = gb.get_b();
-        r = f(gb, r);
-        gb.set_b(r);
-        return 8;
-    }
-    pub fn shift_b(gb: &mut GB, f: &Fn(&mut GB, u8) -> u8) -> u32 {
-        let mut r = gb.get_b();
-        r = f(gb, r);
-        gb.set_b(r);
-        return 8;
-    }
-    pub fn shift_c(gb: &mut GB, f: &Fn(&mut GB, u8) -> u8) -> u32 {
-        let mut r = gb.get_c();
-        r = f(gb, r);
-        gb.set_c(r);
-        return 8;
-    }
-    pub fn shift_d(gb: &mut GB, f: &Fn(&mut GB, u8) -> u8) -> u32 {
-        let mut r = gb.get_d();
-        r = f(gb, r);
-        gb.set_d(r);
-        return 8;
-    }
-    pub fn shift_e(gb: &mut GB, f: &Fn(&mut GB, u8) -> u8) -> u32 {
-        let mut r = gb.get_e();
-        r = f(gb, r);
-        gb.set_e(r);
-        return 8;
-    }
-    pub fn shift_h(gb: &mut GB, f: &Fn(&mut GB, u8) -> u8) -> u32 {
-        let mut r = gb.get_h();
-        r = f(gb, r);
-        gb.set_h(r);
-        return 8;
-    }
-    pub fn shift_l(gb: &mut GB, f: &Fn(&mut GB, u8) -> u8) -> u32 {
-        let mut r = gb.get_l();
-        r = f(gb, r);
-        gb.set_l(r);
         return 8;
     }
     pub fn shift_mem(&mut self, f: &Fn(&mut GB, u8) -> u8) -> u32 {
