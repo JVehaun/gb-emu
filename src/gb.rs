@@ -992,7 +992,8 @@ impl GB {
     fn ld_mem_a16_r16(&mut self, dest_addr: u16, val: u16) -> u32 {
         self.mem_write(dest_addr, (val & 0xFF) as u8);
         self.mem_write(dest_addr+1, ((val >> 8) & 0xFF) as u8);
-        return 8;
+        self.pc += 3;
+        return 20;
     }
     fn ld_a_mem_hl_inc(&mut self) -> u32 {
         let val = self.mem_read(self.hl);
@@ -1080,6 +1081,7 @@ impl GB {
         let a16 = ((self.mem_read(self.pc + 1) as u16) << 8) | (self.mem_read(self.pc + 2) as u16);
         let val = self.mem_read(a16);
         self.set_a(val);
+        self.pc += 3;
         return 16;
     }
 
@@ -1152,6 +1154,7 @@ impl GB {
         // Set N
         self.set_n(0);
 
+        self.pc += 1;
         return 4;
     }
     fn and_r8(&mut self, val: u8) -> u32 {
@@ -1175,6 +1178,7 @@ impl GB {
         // Set N
         self.set_n(0);
 
+        self.pc += 1;
         return 4;
     }
     fn cp_r8(&mut self, val: u8) -> u32 {
@@ -1210,6 +1214,7 @@ impl GB {
         // Set N
         self.set_n(1);
 
+        self.pc += 1;
         return 4;
     }
     fn or_r8(&mut self, val: u8) -> u32 {
@@ -1232,6 +1237,8 @@ impl GB {
 
         // Set N
         self.set_n(0);
+
+        self.pc += 1;
         return 4;
     }
     fn sbc_r8(&mut self, val: u8) -> u32 {
@@ -1268,6 +1275,7 @@ impl GB {
         // Set N
         self.set_n(1);
 
+        self.pc += 1;
         return 4;
     }
     fn sub_r8(&mut self, val: u8) -> u32 {
@@ -1301,6 +1309,7 @@ impl GB {
         // Set N
         self.set_n(1);
 
+        self.pc += 1;
         return 4;
     }
     fn xor_r8(&mut self, val: u8) -> u32 {
@@ -1321,6 +1330,7 @@ impl GB {
             self.set_z(1);
         }
 
+        self.pc += 1;
         // Set N
         self.set_n(0);
         return 4;
@@ -1356,6 +1366,7 @@ impl GB {
 
         self.hl = result;
 
+        self.pc += 1;
         return 8;
     }
     fn add_hl_de(&mut self) -> u32 {
@@ -1388,6 +1399,7 @@ impl GB {
         self.set_n(0);
 
         self.hl = result;
+        self.pc += 1;
         return 8;
     }
     fn add_hl_hl(&mut self) -> u32 {
@@ -1420,6 +1432,7 @@ impl GB {
         self.set_n(0);
 
         self.hl = result;
+        self.pc += 1;
         return 8;
     }
     fn add_hl_sp(&mut self) -> u32 {
@@ -1452,6 +1465,7 @@ impl GB {
         self.set_n(0);
 
         self.hl = result;
+        self.pc += 1;
         return 8;
     }
     fn dec_r8(&mut self, setter: &Fn(&mut GB, u8), getter: &Fn(&mut GB) -> u8) -> u32 {
@@ -1476,6 +1490,7 @@ impl GB {
         // Set N
         self.set_n(1);
 
+        self.pc += 1;
         return 4;
     }
     fn dec_r8_mem(&mut self) -> u32 {
@@ -1503,26 +1518,31 @@ impl GB {
         // Set N
         self.set_n(1);
 
+        self.pc += 1;
         return 4;
     }
     fn dec_bc(&mut self) -> u32 {
         let (result, _) = self.bc.overflowing_sub(1);
         self.bc = result;
+        self.pc += 1;
         return 8;
     }
     fn dec_de(&mut self) -> u32 {
         let (result, _) = self.de.overflowing_sub(1);
         self.de = result;
+        self.pc += 1;
         return 8;
     }
     fn dec_hl(&mut self) -> u32 {
         let (result, _) = self.hl.overflowing_sub(1);
         self.hl = result;
+        self.pc += 1;
         return 8;
     }
     fn dec_sp(&mut self) -> u32 {
         let (result, _) = self.sp.overflowing_sub(1);
         self.sp = result;
+        self.pc += 1;
         return 8;
     }
     fn inc_r8(&mut self, setter: &Fn(&mut GB, u8), getter: &Fn(&mut GB) -> u8) -> u32 {
@@ -1547,15 +1567,13 @@ impl GB {
         // Set N
         self.set_n(1);
 
+        self.pc += 1;
         return 4;
     }
     fn inc_r8_mem(&mut self) -> u32 {
         let mut val = self.mem_read(self.hl);
         let (result, _) = val.overflowing_add(1);
         self.mem_write(self.hl, result);
-        println!("HL: {:#X}", self.hl);
-        println!("Val: {:#X}", val);
-        println!("Result: {:#X}", result);
 
         // Calculate Z
         if result == 0 {
@@ -1574,34 +1592,41 @@ impl GB {
         // Set N
         self.set_n(1);
 
+        self.pc += 1;
         return 4;
     }
     fn inc_bc(&mut self) -> u32 {
         let (result, _) = self.bc.overflowing_add(1);
         self.bc = result;
+        self.pc += 1;
         return 8;
     }
     fn inc_de(&mut self) -> u32 {
         let (result, _) = self.de.overflowing_add(1);
         self.de = result;
+        self.pc += 1;
         return 8;
     }
     fn inc_hl(&mut self) -> u32 {
         let (result, _) = self.hl.overflowing_add(1);
         self.hl = result;
+        self.pc += 1;
         return 8;
     }
     fn inc_sp(&mut self) -> u32 {
         let (result, _) = self.sp.overflowing_add(1);
         self.sp = result;
+        self.pc += 1;
         return 8;
     }
     fn ei(&mut self) -> u32 {
         self.ime = 1;
+        self.pc += 1;
         return 4;
     }
     fn di(&mut self) -> u32 {
         self.ime = 0;
+        self.pc += 1;
         return 4;
     }
     fn jp_a16(&mut self) -> u32 {
@@ -1746,6 +1771,7 @@ impl GB {
         self.mem_write(self.sp, msb);
         self.mem_write(self.sp-1, lsb);
         self.sp = self.sp - 2;
+        self.pc+= 1;
         return 16;
     }
     fn rst_n8(&mut self, val: u8) -> u32 {
@@ -1757,6 +1783,7 @@ impl GB {
         let lsb = self.mem_read(self.sp+1) as u16;
         self.sp = self.sp + 2;
         self.bc = (msb << 8) | lsb;
+        self.pc+= 1;
         return 12;
     }
     fn pop_de(&mut self) -> u32 {
@@ -1764,6 +1791,7 @@ impl GB {
         let lsb = self.mem_read(self.sp+1) as u16;
         self.sp = self.sp + 2;
         self.de = (msb << 8) | lsb;
+        self.pc+= 1;
         return 12;
     }
     fn pop_hl(&mut self) -> u32 {
@@ -1771,6 +1799,7 @@ impl GB {
         let lsb = self.mem_read(self.sp+1) as u16;
         self.sp = self.sp + 2;
         self.hl = (msb << 8) | lsb;
+        self.pc+= 1;
         return 12;
     }
     fn pop_af(&mut self) -> u32 {
@@ -1778,6 +1807,7 @@ impl GB {
         let lsb = self.mem_read(self.sp+1) as u16;
         self.sp = self.sp + 2;
         self.af = (msb << 8) | lsb;
+        self.pc+= 1;
         return 12;
     }
     fn daa(&mut self) -> u32 {
@@ -1795,17 +1825,20 @@ impl GB {
             let (a, _) = a.overflowing_sub(0x60);
         }
         self.set_a(a);
+        self.pc+= 1;
         return 4;
     }
     fn scf(&mut self) -> u32 {
         self.set_cy(1);
         self.set_n(0);
         self.set_hc(0);
+        self.pc+= 1;
         return 4;
     }
     fn cpl(&mut self) -> u32 {
         let a = self.get_a();
         self.set_a(!a);
+        self.pc+= 1;
         return 4;
     }
     fn ccf(&mut self) -> u32 {
@@ -1816,6 +1849,7 @@ impl GB {
         }
         self.set_n(0);
         self.set_hc(0);
+        self.pc+= 1;
         return 4;
     }
 }
